@@ -89,7 +89,7 @@ var Bussable = Base.compose( [Base], /** @lends mixins/bussable# */{
 	destroy : function () {
 		this.log.trace( "Bussable destroy" );
 
-		sys.each( this.subscriptions, function ( sub ) {
+		sys.each( this.subscriptions, sub => {
 			sub.unsubscribe();
 		} );
 	}
