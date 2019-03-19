@@ -33,13 +33,13 @@ var dataBinderOptions = exports.dataBinderOptions = {
  * @param {string} path The path that was bound using {@link module:documents/binder.bind}
  * @param {*} record The object that was bound
  */
-exports.unbind = function ( path, record ) {
+exports.unbind = ( path, record ) => {
 	var context = record;
 	var lastParent = context;
 	var parts = path.split( probe.delimiter );
 	var lastPartName = path;
 	var lastParentName;
-	sys.each( parts, function ( part ) {
+	sys.each( parts, part => {
 		lastParentName = part;
 		lastParent = context;
 		context = context[part];
@@ -89,7 +89,7 @@ exports.unbind = function ( path, record ) {
  * @param {boolean=} options.validatorAsync When true (not truthy) the validator is treated asynchornously and returns a promise with your value.
  * @returns {*}
  */
-exports.bind = function ( path, record, options ) {
+exports.bind = ( path, record, options ) => {
 	options = sys.extend( {}, dataBinderOptions, options );
 	var context = record;
 	var lastParent = context;
@@ -97,7 +97,7 @@ exports.bind = function ( path, record, options ) {
 	var lastPartName = path;
 	var lastParentName;
 
-	sys.each( parts, function ( part ) {
+	sys.each( parts, part => {
 		lastParentName = part;
 		lastParent = context;
 		context = context[part];
@@ -116,7 +116,7 @@ exports.bind = function ( path, record, options ) {
 	function setUpBindings( mountPoint, mountName ) {
 		mountPoint["__" + mountName + "__"] = mountPoint[mountName];
 		Object.defineProperty( mountPoint, mountName, {
-			get : function () {
+			get : () => {
 				if ( sys.isFunction( options.getter ) ) {
 					var promise;
 					if ( options.getterAsync === true ) {
@@ -124,7 +124,7 @@ exports.bind = function ( path, record, options ) {
 					}
 
 					if ( promise ) {
-						return promise( mountPoint["__" + mountName + "__"] ).then( function ( val ) {
+						return promise( mountPoint["__" + mountName + "__"] ).then( val => {
 							mountPoint["__" + mountName + "__"] = val;
 						} );
 					} else {
@@ -136,9 +136,9 @@ exports.bind = function ( path, record, options ) {
 					return mountPoint["__" + mountName + "__"];
 				}
 			},
-			set : function ( val ) {
+			set : val => {
 				async.waterfall( [
-					function ( done ) {
+					done => {
 						if ( sys.isFunction( options.validator ) ) {
 							if ( options.validatorAsync ) {
 								options.validator( val, mountPoint["__" + mountName + "__"], record, done );
@@ -154,7 +154,7 @@ exports.bind = function ( path, record, options ) {
 							done();
 						}
 					},
-					function ( done ) {
+					done => {
 						if ( sys.isFunction( options.setter ) ) {
 							if ( options.setterAsync === true ) {
 								options.setter( val, mountPoint["__" + mountName + "__"], record, done );
@@ -165,7 +165,7 @@ exports.bind = function ( path, record, options ) {
 							done( null, val );
 						}
 					}
-				], function ( err, newVal ) {
+				], ( err, newVal ) => {
 					if ( err ) { throw new Error( err ); }
 					mountPoint["__" + mountName + "__"] = newVal;
 				} );
