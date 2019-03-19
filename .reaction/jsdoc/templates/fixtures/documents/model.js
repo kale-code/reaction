@@ -46,10 +46,8 @@ var Model = Base.compose( [Base], /** @lends documents/model# */{
 		 * @private
 		 */
 		Object.defineProperty( this, "_idField", {
-			get          : function () {
-				return idField;
-			},
-			set          : function ( val ) {
+			get          : () => idField,
+			set          : val => {
 				idField = val;
 			},
 			configurable : false,
@@ -66,14 +64,14 @@ var Model = Base.compose( [Base], /** @lends documents/model# */{
 		 * @private
 		 */
 		Object.defineProperty( this, "_pkey", {
-			get          : function () {
+			get          : () => {
 				var val;
 				if ( !sys.isEmpty( that._idField ) ) {
 					val = that[that._idField];
 				}
 				return val;
 			},
-			set          : function ( val ) {
+			set          : val => {
 				if ( !sys.isEmpty( that._idField ) ) {
 					that[that._idField] = val;
 				}
@@ -90,9 +88,7 @@ var Model = Base.compose( [Base], /** @lends documents/model# */{
 		 * @memberOf  documents/model#
 		 */
 		Object.defineProperty( this, "isNew", {
-			get          : function () {
-				return !sys.isEmpty( that._idField ) && !sys.isEmpty( that[that._idField] )
-			},
+			get          : () => !sys.isEmpty( that._idField ) && !sys.isEmpty( that[that._idField] ),
 			configurable : false,
 			enumerable   : true,
 			writable     : false
@@ -105,9 +101,7 @@ var Model = Base.compose( [Base], /** @lends documents/model# */{
 		 * @memberOf  documents/model#
 		 */
 		Object.defineProperty( this, "isEmpty", {
-			get          : function () {
-				return sys.isEmpty( that );
-			},
+			get          : () => sys.isEmpty( that ),
 			configurable : false,
 			enumerable   : true,
 			writable     : false
