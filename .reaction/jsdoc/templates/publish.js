@@ -98,7 +98,7 @@ function updateItemName(item) {
 
 function addParamAttributes(params) {
     return params.filter(function(param) {
-        return param.name && param.name.indexOf('.') === -1;
+        return param.name && !param.name.includes('.');
     }).map(updateItemName);
 }
 
@@ -151,7 +151,7 @@ function addSignatureReturns(f) {
     if (f.returns) {
         f.returns.forEach(function(item) {
             helper.getAttribs(item).forEach(function(attrib) {
-                if (attribs.indexOf(attrib) === -1) {
+                if (!attribs.includes(attrib)) {
                     attribs.push(attrib);
                 }
             });
@@ -270,8 +270,7 @@ function attachModuleSymbols(doclets, modules) {
         if (symbols[module.longname]) {
             module.modules = symbols[module.longname]
                 // Only show symbols that have a description. Make an exception for classes, because
-                // we want to show the constructor-signature heading no matter what.
-                .filter(function(symbol) {
+                // we want to show the constructor-signature heading no matter what.                .filter(function(symbol) {
                     return symbol.description || symbol.kind === 'class';
                 })
                 .map(function(symbol) {
@@ -473,7 +472,7 @@ exports.publish = function(taffyData, opts, tutorials) {
                 resolved: sourcePath,
                 shortened: null
             };
-            if (sourceFilePaths.indexOf(sourcePath) === -1) {
+            if (!sourceFilePaths.includes(sourcePath)) {
                 sourceFilePaths.push(sourcePath);
             }
         }
