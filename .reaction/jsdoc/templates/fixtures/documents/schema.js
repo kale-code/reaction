@@ -113,7 +113,7 @@ var Schema = Base.compose( [Base], /** @lends documents/schema# */{
 				env.addSchema( this._defaultSchemaName, schema );
 			}
 			if ( !sys.isEmpty( schemas ) ) {
-				sys.each( schemas, function ( val, key ) {
+				sys.each( schemas, ( val, key ) => {
 					env.addSchema( val, key );
 				} );
 			}
