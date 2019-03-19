@@ -12,7 +12,7 @@ import { getUser } from "/imports/plugins/core/core/server/fixtures/users";
 
 Fixtures();
 
-describe("Group test", function () {
+describe("Group test", () => {
   let methods;
   let sandbox;
   let shop;
@@ -28,7 +28,7 @@ describe("Group test", function () {
     permissions: ["guest", "account/profile", "product", "tag", "index", "cart/completed"]
   };
 
-  before(function () {
+  before(() => {
     methods = {
       createGroup: Meteor.server.method_handlers["group/createGroup"],
       addUser: Meteor.server.method_handlers["group/addUser"],
@@ -37,7 +37,7 @@ describe("Group test", function () {
     };
   });
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
     shop = Factory.create("shop");
     user = getUser();
@@ -45,7 +45,7 @@ describe("Group test", function () {
     Accounts.upsert({ _id: user._id }, { $set: { shopId: shop._id, userId: user._id } });
   });
 
-  afterEach(function () {
+  afterEach(() => {
     Groups.remove({});
     sandbox.restore();
     Meteor.users.remove({});
@@ -60,7 +60,7 @@ describe("Group test", function () {
     });
   }
 
-  it("should create a group for a particular existing shop", function () {
+  it("should create a group for a particular existing shop", () => {
     sandbox.stub(Reaction, "hasPermission", () => true);
     spyOnMethod("createGroup", shop._id);
 
@@ -70,7 +70,7 @@ describe("Group test", function () {
     expect(group.name).to.equal(sampleGroup.name);
   });
 
-  it("should ensure one group type per shop", function () {
+  it("should ensure one group type per shop", () => {
     sandbox.stub(Reaction, "hasPermission", () => true);
     spyOnMethod("createGroup", shop._id);
 
@@ -81,7 +81,7 @@ describe("Group test", function () {
     }).to.throw(ReactionError, /Group already exist for this shop/);
   });
 
-  it("should check admin access before creating a group", function () {
+  it("should check admin access before creating a group", () => {
     sandbox.stub(Reaction, "hasPermission", () => false);
     spyOnMethod("createGroup", shop._id);
 
@@ -92,7 +92,7 @@ describe("Group test", function () {
     expect(createGroup).to.throw(ReactionError, /Access Denied/);
   });
 
-  it("should add a user to a group successfully and reference the id on the user account", function () {
+  it("should add a user to a group successfully and reference the id on the user account", () => {
     sandbox.stub(Reaction, "hasPermission", () => true);
     sandbox.stub(Reaction, "canInviteToGroup", () => true);
     spyOnMethod("createGroup", shop._id);
@@ -105,7 +105,7 @@ describe("Group test", function () {
     expect(updatedUser.groups).to.include.members([group._id]);
   });
 
-  it("should add a user to a group and update user's permissions", function () {
+  it("should add a user to a group and update user's permissions", () => {
     sandbox.stub(Reaction, "hasPermission", () => true);
     sandbox.stub(Reaction, "canInviteToGroup", () => true);
     spyOnMethod("createGroup", shop._id);
@@ -119,7 +119,7 @@ describe("Group test", function () {
     expect(updatedUser.roles[shop._id]).to.include.members(sampleGroup.permissions);
   });
 
-  it("should remove a user from a group and update user's permissions to default customer", function () {
+  it("should remove a user from a group and update user's permissions to default customer", () => {
     sandbox.stub(Reaction, "hasPermission", () => true);
     sandbox.stub(Reaction, "canInviteToGroup", () => true);
     spyOnMethod("createGroup", shop._id);
@@ -138,7 +138,7 @@ describe("Group test", function () {
     expect(updatedUser.roles[shop._id]).to.include.members(sampleCustomerGroup.permissions);
   });
 
-  it("should ensure a user's permissions does not include roles from previous group", function () {
+  it("should ensure a user's permissions does not include roles from previous group", () => {
     sandbox.stub(Reaction, "hasPermission", () => true);
     sandbox.stub(Reaction, "canInviteToGroup", () => true);
     spyOnMethod("createGroup", shop._id);
@@ -162,7 +162,7 @@ describe("Group test", function () {
     expect(updatedUser.roles[shop._id]).to.not.include.members(sampleGroup.permissions);
   });
 
-  it("should ensure a user's permissions get updated when the group permissions changes", function () {
+  it("should ensure a user's permissions get updated when the group permissions changes", () => {
     sandbox.stub(Reaction, "hasPermission", () => true);
     sandbox.stub(Reaction, "canInviteToGroup", () => true);
     spyOnMethod("createGroup", shop._id);
