@@ -37,7 +37,7 @@ Migrations.add({
 });
 
 function updateHandler(collection) {
-  return function (doc) {
+  return doc => {
     let changed = false;
     for (const layout of doc.layout) {
       if (layout.structure && layout.structure.template === "cartCheckout") {
@@ -62,7 +62,7 @@ function updateHandler(collection) {
 }
 
 function downgradeHandler(collection) {
-  return function (doc) {
+  return doc => {
     let changed = false;
     for (const layout of doc.layout) {
       if (layout.structure && layout.structure.layoutHeader === "NavBar") {
