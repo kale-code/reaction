@@ -11,19 +11,19 @@ import Fixtures from "/imports/plugins/core/core/server/fixtures";
 
 Fixtures();
 
-describe("i18n methods", function () {
+describe("i18n methods", () => {
   let sandbox;
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
   });
 
-  describe("i18n/flushTranslations", function () {
-    it("should throw 403 error by non admin", function () {
+  describe("i18n/flushTranslations", () => {
+    it("should throw 403 error by non admin", () => {
       sandbox.stub(Roles, "userIsInRole", () => false);
       const removeTranslationSpy = sandbox.spy(Translations, "remove");
       const importTranslationSpy = sandbox.spy(Reaction.Importer, "translation");
