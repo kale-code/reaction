@@ -53,8 +53,7 @@ var sys = require( "lodash" );
 var Signal = Base.compose( [Base, signals.Signal], /** @lends module:mixins/signalable~Signal# */{
 	declaredClass : "mixins/Signal",
 
-	constructor : function ( host, name, options ) {
-		options = options || {};
+	constructor : function ( host, name, options = {} ) {
 		this.memorize = options.memorize === true;
 		this.host = host;
 		this.trigger = this.fire = this.raise = this.dispatch;
@@ -205,8 +204,7 @@ var Signalable = Base.compose( [Base], /** @lends mixins/signalable# */{
 	 * @param {module:mixins/signalable.SignalOptions} signals
 	 * @private
 	 */
-	_addSignals : function ( signals ) {
-		signals = signals || {};
+	_addSignals : function ( signals = {} ) {
 		if ( this.options ) {signals = sys.extend( {}, sys.result( this, 'signals' ), signals );}
 		this.signals = signals;
 	},
