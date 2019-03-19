@@ -5,21 +5,19 @@ import { expect } from "meteor/practicalmeteor:chai";
 import { Shops, Groups } from "/lib/collections";
 import Reaction from "/imports/plugins/core/core/server/Reaction";
 
-describe("Server/API/Core", function () {
+describe("Server/API/Core", () => {
   let sandbox;
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
   });
 
   describe("addDefaultRoles", () => {
-    beforeEach(function () {
-      return Shops.remove({});
-    });
+    beforeEach(() => Shops.remove({}));
 
     it("should add a role to the default customer group for a specified shop", () => {
       const shop = Factory.create("shop");
