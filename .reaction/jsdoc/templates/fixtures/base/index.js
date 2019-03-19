@@ -61,7 +61,7 @@ var Base = dcl( [chains], /** @lends base# */{
 	 * @see {base/chains#end}
 	 * @see {base/chains#destroy}
 	 */
-	destroy : function () {
+	destroy : () => {
 
 	}
 
