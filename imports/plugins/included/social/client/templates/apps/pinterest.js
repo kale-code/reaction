@@ -13,7 +13,7 @@ Template.pinterest.onRendered(function () {
       media: image being shared
       description: image description
    */
-  return this.autorun(function () {
+  return this.autorun(() => {
     let media;
     let ref1;
     const template = Template.instance();
@@ -32,7 +32,7 @@ Template.pinterest.onRendered(function () {
 });
 
 Template.pinterest.events({
-  "click a": function (event) {
+  "click a": event => {
     event.preventDefault();
     return window.open(Template.instance().$(".pinterest-share").attr("href"), "pinterest_window", "width=750, height=650");
   }
