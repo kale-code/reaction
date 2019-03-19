@@ -13,26 +13,20 @@ const providers = {
   Twitter: {}
 };
 
-providers.Facebook.fields = function () {
-  return [
+providers.Facebook.fields = () => [
     { property: "appId", label: "App ID" },
     { property: "secret", label: "App Secret" }
   ];
-};
 
-providers.Google.fields = function () {
-  return [
+providers.Google.fields = () => [
     { property: "clientId", label: "Client ID" },
     { property: "secret", label: "Client secret" }
   ];
-};
 
-providers.Twitter.fields = function () {
-  return [
+providers.Twitter.fields = () => [
     { property: "consumerKey", label: "API key" },
     { property: "secret", label: "API secret" }
   ];
-};
 
 export class ServiceConfigHelper {
   availableServices() {
