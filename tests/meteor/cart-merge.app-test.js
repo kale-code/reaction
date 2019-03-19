@@ -15,7 +15,7 @@ import hashLoginToken from "/imports/node-app/core/util/hashLoginToken";
 
 Fixtures();
 
-describe("Merge Cart function ", function () {
+describe("Merge Cart function ", () => {
   const shop = getShop();
   let originals;
   let sandbox;
@@ -25,7 +25,7 @@ describe("Merge Cart function ", function () {
   let userId;
   let accountId;
 
-  before(function () {
+  before(() => {
     originals = {
       mergeCart: Meteor.server.method_handlers["cart/mergeCart"],
       addToCart: Meteor.server.method_handlers["cart/addToCart"]
@@ -34,7 +34,7 @@ describe("Merge Cart function ", function () {
     Collections.Products.remove({});
 
     // mock it. If you want to make full integration test, comment this out
-    pushCartWorkflowStub = sinon.stub(Meteor.server.method_handlers, "workflow/pushCartWorkflow", function (...args) {
+    pushCartWorkflowStub = sinon.stub(Meteor.server.method_handlers, "workflow/pushCartWorkflow", (...args) => {
       check(args, [Match.Any]);
       return true;
     });
@@ -45,16 +45,16 @@ describe("Merge Cart function ", function () {
     accountId = account._id;
   });
 
-  after(function () {
+  after(() => {
     pushCartWorkflowStub.restore();
   });
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
     Collections.Cart.remove({});
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
     Meteor.users.remove({});
   });
@@ -67,7 +67,7 @@ describe("Merge Cart function ", function () {
     });
   }
 
-  it("should merge all anonymous carts into existent `normal` user cart per session, when logged in", function () {
+  it("should merge all anonymous carts into existent `normal` user cart per session, when logged in", () => {
     sandbox.stub(Reaction, "getShopId", () => shop._id);
     let anonymousCart = Factory.create("anonymousCart");
     let cart = Factory.create("cart", { accountId });
@@ -88,7 +88,7 @@ describe("Merge Cart function ", function () {
     expect(cart.items.length).to.equal(2);
   });
 
-  it("should increase product quantity if anonymous cart items exists in user's cart before merge", function () {
+  it("should increase product quantity if anonymous cart items exists in user's cart before merge", () => {
     sandbox.stub(Reaction, "getShopId", () => shop._id);
     const anonymousCart = Factory.create("anonymousCart");
     let cart = Factory.create("cartOne"); // registered user cart
@@ -113,10 +113,8 @@ describe("Merge Cart function ", function () {
     expect(cart.items[0].quantity).to.be.above(initialCartQty);
   });
 
-  it("should merge only into registered user cart", function (done) {
-    sandbox.stub(Reaction, "getShopId", function () {
-      return shop._id;
-    });
+  it("should merge only into registered user cart", done => {
+    sandbox.stub(Reaction, "getShopId", () => shop._id);
     const cart = Factory.create("anonymousCart");
     spyOnMethod("mergeCart", userId);
     const cartId = cart._id;
@@ -126,7 +124,7 @@ describe("Merge Cart function ", function () {
     return done();
   });
 
-  it("should throw an error if cart doesn't exist", function (done) {
+  it("should throw an error if cart doesn't exist", done => {
     spyOnMethod("mergeCart", "someIdHere");
     function mergeCartFunction() {
       Meteor.call("cart/mergeCart", "non-existent-id", "123", "123");
@@ -135,7 +133,7 @@ describe("Merge Cart function ", function () {
     return done();
   });
 
-  it("should throw an error if cart user is not current user", function (done) {
+  it("should throw an error if cart user is not current user", done => {
     const cart = Factory.create("cart");
     spyOnMethod("mergeCart", "someIdHere");
     function mergeCartFunction() {
