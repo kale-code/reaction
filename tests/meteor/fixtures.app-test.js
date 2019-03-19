@@ -11,34 +11,34 @@ import { createCart } from "/imports/plugins/core/core/server/fixtures/cart";
 
 Fixtures();
 
-describe("Fixtures:", function () {
+describe("Fixtures:", () => {
   let sandbox;
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
     Collections.Orders.remove();
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
     Collections.Orders.remove();
   });
 
-  it("Account fixture should create an account", function () {
+  it("Account fixture should create an account", () => {
     const account = Factory.create("account");
     expect(account).to.not.be.undefined;
     const accountCount = Collections.Accounts.find().count();
     expect(accountCount).to.be.above(0);
   });
 
-  it("Cart fixture should create a cart", function () {
+  it("Cart fixture should create a cart", () => {
     const cart = Factory.create("cart");
     expect(cart).to.not.be.undefined;
     const cartCount = Collections.Cart.find().count();
     expect(cartCount).to.be.above(0);
   });
 
-  it("CartOne fixture should create a cart with one item with a quantity of one", function () {
+  it("CartOne fixture should create a cart with one item with a quantity of one", () => {
     const cartOne = Factory.create("cartOne");
     expect(cartOne).to.not.be.undefined;
     const createdCart = Collections.Cart.findOne({ _id: cartOne._id });
@@ -47,7 +47,7 @@ describe("Fixtures:", function () {
     expect(createdCart.items[0].quantity).to.equal(1);
   });
 
-  it("CartTwo fixture should create a cart with one item with a quantity of two", function () {
+  it("CartTwo fixture should create a cart with one item with a quantity of two", () => {
     const cartOne = Factory.create("cartTwo");
     expect(cartOne).to.not.be.undefined;
     const createdCart = Collections.Cart.findOne({ _id: cartOne._id });
@@ -56,7 +56,7 @@ describe("Fixtures:", function () {
     expect(createdCart.items[0].quantity).to.equal(2);
   });
 
-  it("createCart function should create a cart with a specific product", function () {
+  it("createCart function should create a cart with a specific product", () => {
     const { product, variant } = addProductSingleVariant();
     const cart = createCart(product._id, variant._id);
     expect(cart).to.not.be.undefined;
@@ -65,7 +65,7 @@ describe("Fixtures:", function () {
     expect(createdCart.items.length).to.equal(1);
   });
 
-  it("Order fixture should create an order", function () {
+  it("Order fixture should create an order", () => {
     sandbox.stub(Reaction, "hasPermission", () => true);
     const order = Factory.create("order");
     expect(order).to.not.be.undefined;
@@ -73,14 +73,14 @@ describe("Fixtures:", function () {
     expect(orderCount).to.be.above(0);
   });
 
-  it("Shop fixture should create a Shop", function () {
+  it("Shop fixture should create a Shop", () => {
     const shop = Factory.create("shop");
     expect(shop).to.not.be.undefined;
     const shopCount = Collections.Shops.find().count();
     expect(shopCount).to.be.above(1);
   });
 
-  it("Product fixture should create a product", function () {
+  it("Product fixture should create a product", () => {
     const product = Factory.create("product");
     expect(product).to.not.be.undefined;
     const productCount = Collections.Products.find().count();
