@@ -488,7 +488,7 @@ var operations = {
 		var operands;
 
 		operands = sys.flatten( qu.operands );
-		return sys.indexOf( operands, value ) === -1;
+		return !sys.includes( operands, value );
 	},
 	/**
 	 * `$exists` Sees if a field exists.
@@ -849,7 +849,7 @@ exports.remove = function ( obj, qu ) {
 	if ( sys.isArray( obj ) ) {
 		var newArr = [];
 		sys.each( obj, function ( item, index ) {
-			if ( sys.indexOf( results, index ) === -1 ) {
+			if ( !sys.includes( results, index ) ) {
 				return newArr.push( item );
 			}
 		} );
