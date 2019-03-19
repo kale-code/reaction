@@ -29,7 +29,7 @@ Migrations.add({
 });
 
 function updateHandler(oldValue, newValue) {
-  return function (pkg) {
+  return pkg => {
     let changed = false; // to track if updating is needed
     pkg.layout.forEach((layout) => {
       if (!layout.priority || layout.priority === oldValue) {
