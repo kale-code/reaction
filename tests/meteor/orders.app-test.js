@@ -14,7 +14,7 @@ import { Media } from "/imports/plugins/core/files/server";
 
 Fixtures();
 
-describe("orders test", function () {
+describe("orders test", () => {
   const shop = getShop();
   const shopId = shop._id;
   let methods;
@@ -22,7 +22,7 @@ describe("orders test", function () {
   let order;
   let example;
 
-  before(function (done) {
+  before(done => {
     methods = {
       "cancelOrder": Meteor.server.method_handlers["orders/cancelOrder"],
       "shipmentPicked": Meteor.server.method_handlers["orders/shipmentPicked"],
@@ -44,7 +44,7 @@ describe("orders test", function () {
     return done();
   });
 
-  beforeEach(function (done) {
+  beforeEach(done => {
     sandbox = sinon.sandbox.create();
     order = Factory.create("order");
     sandbox.stub(Reaction, "getShopId", () => order.shopId);
@@ -53,7 +53,7 @@ describe("orders test", function () {
     return done();
   });
 
-  afterEach(function (done) {
+  afterEach(done => {
     Orders.remove({});
     sandbox.restore();
     return done();
@@ -72,14 +72,14 @@ describe("orders test", function () {
     return shippingObject;
   }
 
-  describe("orders/cancelOrder", function () {
-    beforeEach(function () {
-      sandbox.stub(Meteor.server.method_handlers, "orders/sendNotification", function (...args) {
+  describe("orders/cancelOrder", () => {
+    beforeEach(() => {
+      sandbox.stub(Meteor.server.method_handlers, "orders/sendNotification", (...args) => {
         check(args, [Match.Any]);
       });
     });
 
-    it("should return an error if user is not admin", function () {
+    it("should return an error if user is not admin", () => {
       sandbox.stub(Reaction, "hasPermission", () => false);
       const returnToStock = false;
       spyOnMethod("cancelOrder", order.userId);
@@ -90,7 +90,7 @@ describe("orders test", function () {
       expect(cancelOrder).to.throw(ReactionError, /Access Denied/);
     });
 
-    it("should increase inventory with number of items canceled when returnToStock option is selected", function () {
+    it("should increase inventory with number of items canceled when returnToStock option is selected", () => {
       const orderItemId = order.shipping[0].items[0].variantId;
       sandbox.stub(Reaction, "hasPermission", () => true); // Mock user permissions
 
@@ -114,7 +114,7 @@ describe("orders test", function () {
       expect(inventoryInStock).to.equal(inventoryAfterRestock);
     });
 
-    it("should NOT increase/decrease inventory when returnToStock option is false", function () {
+    it("should NOT increase/decrease inventory when returnToStock option is false", () => {
       const orderItemId = order.shipping[0].items[0].variantId;
       sandbox.stub(Reaction, "hasPermission", () => true); // Mock user permissions
 
@@ -134,7 +134,7 @@ describe("orders test", function () {
       expect(inventoryInStock).to.equal(inventoryAfterNoRestock);
     });
 
-    it("should notify owner of the order, if the order is canceled", function () {
+    it("should notify owner of the order, if the order is canceled", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const returnToStock = true;
       spyOnMethod("cancelOrder", order.userId);
@@ -143,7 +143,7 @@ describe("orders test", function () {
       expect(notify.message).to.equal("Your order was canceled.");
     });
 
-    it("should update the payment method status and mode to refunded and canceled respectively ", function () {
+    it("should update the payment method status and mode to refunded and canceled respectively ", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const returnToStock = false;
       spyOnMethod("cancelOrder", order.userId);
@@ -152,7 +152,7 @@ describe("orders test", function () {
       expect(shippingObjectMethod(orderObject).payment.mode).to.equal("cancel");
     });
 
-    it("should change the workflow status of the item to coreOrderItemWorkflow/canceled", function () {
+    it("should change the workflow status of the item to coreOrderItemWorkflow/canceled", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const returnToStock = false;
       spyOnMethod("cancelOrder", order.userId);
@@ -162,8 +162,8 @@ describe("orders test", function () {
     });
   });
 
-  describe("orders/shipmentPicked", function () {
-    it("should throw an error if user is not admin", function () {
+  describe("orders/shipmentPicked", () => {
+    it("should throw an error if user is not admin", () => {
       sandbox.stub(Reaction, "hasPermission", () => false);
       const shipment = shippingObjectMethod(order);
       spyOnMethod("shipmentPicked", order, shipment);
@@ -174,7 +174,7 @@ describe("orders test", function () {
       expect(shipmentPicked).to.throw(ReactionError, /Access Denied/);
     });
 
-    it("should update the order item workflow status to coreOrderItemWorkflow/picked", function () {
+    it("should update the order item workflow status to coreOrderItemWorkflow/picked", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const shipment = shippingObjectMethod(order);
       spyOnMethod("shipmentPicked", order.userId);
@@ -183,7 +183,7 @@ describe("orders test", function () {
       expect(orderItem.workflow.status).to.equal("coreOrderItemWorkflow/picked");
     });
 
-    it("should update the shipment workflow status to coreOrderWorkflow/picked", function () {
+    it("should update the shipment workflow status to coreOrderWorkflow/picked", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const shipment = shippingObjectMethod(order);
       spyOnMethod("shipmentPicked", order.userId);
@@ -193,8 +193,8 @@ describe("orders test", function () {
     });
   });
 
-  describe("orders/shipmentPacked", function () {
-    it("should throw an error if user is not admin", function () {
+  describe("orders/shipmentPacked", () => {
+    it("should throw an error if user is not admin", () => {
       sandbox.stub(Reaction, "hasPermission", () => false);
       const shipment = shippingObjectMethod(order);
       spyOnMethod("shipmentPacked", order, shipment);
@@ -205,7 +205,7 @@ describe("orders test", function () {
       expect(shipmentPacked).to.throw(ReactionError, /Access Denied/);
     });
 
-    it("should update the order item workflow status to coreOrderItemWorkflow/packed", function () {
+    it("should update the order item workflow status to coreOrderItemWorkflow/packed", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const shipment = shippingObjectMethod(order);
       spyOnMethod("shipmentPacked", order.userId);
@@ -214,7 +214,7 @@ describe("orders test", function () {
       expect(orderItem.workflow.status).to.equal("coreOrderItemWorkflow/packed");
     });
 
-    it("should update the shipment workflow status to coreOrderWorkflow/packed", function () {
+    it("should update the shipment workflow status to coreOrderWorkflow/packed", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const shipment = shippingObjectMethod(order);
       spyOnMethod("shipmentPacked", order.userId);
@@ -224,8 +224,8 @@ describe("orders test", function () {
     });
   });
 
-  describe("orders/shipmentLabeled", function () {
-    it("should throw an error if user is not admin", function () {
+  describe("orders/shipmentLabeled", () => {
+    it("should throw an error if user is not admin", () => {
       sandbox.stub(Reaction, "hasPermission", () => false);
       const shipment = shippingObjectMethod(order);
       spyOnMethod("shipmentLabeled", order, shipment);
@@ -236,7 +236,7 @@ describe("orders test", function () {
       expect(shipmentLabeled).to.throw(ReactionError, /Access Denied/);
     });
 
-    it("should update the order item workflow status to coreOrderItemWorkflow/labeled", function () {
+    it("should update the order item workflow status to coreOrderItemWorkflow/labeled", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const shipment = shippingObjectMethod(order);
       spyOnMethod("shipmentLabeled", order.userId);
@@ -245,7 +245,7 @@ describe("orders test", function () {
       expect(orderItem.workflow.status).to.equal("coreOrderItemWorkflow/labeled");
     });
 
-    it("should update the shipment workflow status to coreOrderWorkflow/labeled", function () {
+    it("should update the shipment workflow status to coreOrderWorkflow/labeled", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const shipment = shippingObjectMethod(order);
       spyOnMethod("shipmentLabeled", order.userId);
@@ -255,8 +255,8 @@ describe("orders test", function () {
     });
   });
 
-  describe("orders/makeAdjustmentsToInvoice", function () {
-    it("should throw an error if user is not admin", function () {
+  describe("orders/makeAdjustmentsToInvoice", () => {
+    it("should throw an error if user is not admin", () => {
       sandbox.stub(Reaction, "hasPermission", () => false);
       spyOnMethod("makeAdjustmentsToInvoice", order.userId);
 
@@ -266,7 +266,7 @@ describe("orders test", function () {
       expect(makeAdjustmentsToInvoice).to.throw(ReactionError, /Access Denied/);
     });
 
-    it("should make adjustment to the invoice", function () {
+    it("should make adjustment to the invoice", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       spyOnMethod("makeAdjustmentsToInvoice", order.userId);
       Meteor.call("orders/makeAdjustmentsToInvoice", order);
@@ -275,8 +275,8 @@ describe("orders test", function () {
     });
   });
 
-  describe("orders/approvePayment", function () {
-    it("should throw an error if user is not admin", function () {
+  describe("orders/approvePayment", () => {
+    it("should throw an error if user is not admin", () => {
       sandbox.stub(Reaction, "hasPermission", () => false);
       spyOnMethod("approvePayment", order.userId);
       function approvePayment() {
@@ -285,7 +285,7 @@ describe("orders test", function () {
       expect(approvePayment).to.throw(ReactionError, /Access Denied/);
     });
 
-    it("should approve payment", function () {
+    it("should approve payment", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       spyOnMethod("approvePayment", order.userId);
       const { invoice } = shippingObjectMethod(order);
@@ -304,8 +304,8 @@ describe("orders test", function () {
     });
   });
 
-  describe("orders/shipmentShipped", function () {
-    it("should throw an error if user does not have permission", function () {
+  describe("orders/shipmentShipped", () => {
+    it("should throw an error if user does not have permission", () => {
       sandbox.stub(Reaction, "hasPermission", () => false);
       const shipment = shippingObjectMethod(order);
       spyOnMethod("shipmentShipped", order.userId);
@@ -315,10 +315,10 @@ describe("orders test", function () {
       expect(shipmentShipped).to.throw(ReactionError, /Access Denied/);
     });
 
-    it("should update the order item workflow status to coreOrderItemWorkflow/completed", function () {
+    it("should update the order item workflow status to coreOrderItemWorkflow/completed", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const shipment = shippingObjectMethod(order);
-      sandbox.stub(Meteor.server.method_handlers, "orders/sendNotification", function (...args) {
+      sandbox.stub(Meteor.server.method_handlers, "orders/sendNotification", (...args) => {
         check(args, [Match.Any]);
       });
       spyOnMethod("shipmentShipped", order.userId);
@@ -327,10 +327,10 @@ describe("orders test", function () {
       expect(orderItem.workflow.status).to.equal("coreOrderItemWorkflow/completed");
     });
 
-    it("should update the order workflow status to completed", function () {
+    it("should update the order workflow status to completed", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const shipment = shippingObjectMethod(order);
-      sandbox.stub(Meteor.server.method_handlers, "orders/sendNotification", function (...args) {
+      sandbox.stub(Meteor.server.method_handlers, "orders/sendNotification", (...args) => {
         check(args, [Match.Any]);
       });
       spyOnMethod("shipmentShipped", order.userId);
@@ -339,10 +339,10 @@ describe("orders test", function () {
       expect(orderStatus).to.equal("coreOrderWorkflow/completed");
     });
 
-    it("should update the order shipping workflow status to coreOrderWorkflow/shipped", function () {
+    it("should update the order shipping workflow status to coreOrderWorkflow/shipped", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const shipment = shippingObjectMethod(order);
-      sandbox.stub(Meteor.server.method_handlers, "orders/sendNotification", function (...args) {
+      sandbox.stub(Meteor.server.method_handlers, "orders/sendNotification", (...args) => {
         check(args, [Match.Any]);
       });
       spyOnMethod("shipmentShipped", order.userId);
@@ -352,14 +352,14 @@ describe("orders test", function () {
     });
   });
 
-  describe("orders/shipmentDelivered", function () {
-    beforeEach(function () {
-      sandbox.stub(Meteor.server.method_handlers, "orders/sendNotification", function (...args) {
+  describe("orders/shipmentDelivered", () => {
+    beforeEach(() => {
+      sandbox.stub(Meteor.server.method_handlers, "orders/sendNotification", (...args) => {
         check(args, [Match.Any]);
       });
     });
 
-    it("should throw an error if user does not have permissions", function () {
+    it("should throw an error if user does not have permissions", () => {
       sandbox.stub(Reaction, "hasPermission", () => false);
       spyOnMethod("shipmentDelivered", order.userId);
       function shipmentDelivered() {
@@ -368,7 +368,7 @@ describe("orders test", function () {
       expect(shipmentDelivered).to.throw(ReactionError, /Access Denied/);
     });
 
-    it("should update the order item workflow status to coreOrderItemWorkflow/completed", function () {
+    it("should update the order item workflow status to coreOrderItemWorkflow/completed", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       spyOnMethod("shipmentDelivered", order.userId);
       Meteor.call("orders/shipmentDelivered", order);
@@ -376,7 +376,7 @@ describe("orders test", function () {
       expect(orderItemWorkflow.status).to.equal("coreOrderItemWorkflow/completed");
     });
 
-    it("should update the order shipping workflow status to coreOrderWorkflow/delivered", function () {
+    it("should update the order shipping workflow status to coreOrderWorkflow/delivered", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       spyOnMethod("shipmentDelivered", order.userId);
       Meteor.call("orders/shipmentDelivered", order);
@@ -384,7 +384,7 @@ describe("orders test", function () {
       expect(orderShipping.workflow.status).to.equal("coreOrderWorkflow/delivered");
     });
 
-    it("should update the order workflow status to processing", function () {
+    it("should update the order workflow status to processing", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       spyOnMethod("shipmentDelivered", order.userId);
       Meteor.call("orders/shipmentDelivered", order);
@@ -393,8 +393,8 @@ describe("orders test", function () {
     });
   });
 
-  describe("orders/sendNotification", function () {
-    it("should return access denied if userId is not available", function () {
+  describe("orders/sendNotification", () => {
+    it("should return access denied if userId is not available", () => {
       spyOnMethod("sendNotification");
       function sendNotification() {
         return Meteor.call("orders/sendNotification", order._id);
@@ -402,7 +402,7 @@ describe("orders test", function () {
       expect(sendNotification).to.throw(ReactionError, /Access Denied/);
     });
 
-    it("should send email notification", function () {
+    it("should send email notification", () => {
       spyOnMethod("sendNotification", order.userId);
       // stub url method for media file
       sandbox.stub(Media, "findOne", () => Promise.resolve({
@@ -414,8 +414,8 @@ describe("orders test", function () {
     });
   });
 
-  describe("orders/updateShipmentTracking", function () {
-    it("should return an error if user does not have permission", function () {
+  describe("orders/updateShipmentTracking", () => {
+    it("should return an error if user does not have permission", () => {
       sandbox.stub(Reaction, "hasPermission", () => false);
       const shipment = shippingObjectMethod(order);
       spyOnMethod("updateShipmentTracking", order.userId);
@@ -426,7 +426,7 @@ describe("orders test", function () {
       expect(updateShipmentTracking).to.throw(ReactionError, /Access Denied/);
     });
 
-    it("should update the order tracking value", function () {
+    it("should update the order tracking value", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const shipment = shippingObjectMethod(order);
       spyOnMethod("updateShipmentTracking", order.userId);
@@ -437,8 +437,8 @@ describe("orders test", function () {
     });
   });
 
-  describe("orders/updateHistory", function () {
-    it("should return Access denied if user does not have permission", function () {
+  describe("orders/updateHistory", () => {
+    it("should return Access denied if user does not have permission", () => {
       sandbox.stub(Reaction, "hasPermission", () => false);
       spyOnMethod("updateHistory", order.userId);
       function updateHistory() {
@@ -448,7 +448,7 @@ describe("orders test", function () {
       expect(updateHistory).to.throw(ReactionError, /Access Denied/);
     });
 
-    it("should update the order history for the item", function () {
+    it("should update the order history for the item", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       spyOnMethod("updateHistory", order.userId);
       const trackingValue = "65TFYTGFCHCUJVR66";
@@ -461,14 +461,14 @@ describe("orders test", function () {
     });
   });
 
-  describe("orders/refunds/create", function () {
-    beforeEach(function () {
-      sandbox.stub(Meteor.server.method_handlers, "orders/sendNotification", function (...args) {
+  describe("orders/refunds/create", () => {
+    beforeEach(() => {
+      sandbox.stub(Meteor.server.method_handlers, "orders/sendNotification", (...args) => {
         check(args, [Match.Any]);
       });
     });
 
-    it("should return error if user is does not have admin permissions", function () {
+    it("should return error if user is does not have admin permissions", () => {
       sandbox.stub(Reaction, "hasPermission", () => false);
       const group = shippingObjectMethod(order);
       spyOnMethod("refunds/create", order.userId);
@@ -479,7 +479,7 @@ describe("orders test", function () {
       expect(refundsCreate).to.throw(ReactionError, /Access Denied/);
     });
 
-    it("should update the order as refunded", function () {
+    it("should update the order as refunded", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const group = shippingObjectMethod(order);
       spyOnMethod("refunds/create", order.userId);
@@ -490,14 +490,14 @@ describe("orders test", function () {
     });
   });
 
-  describe("orders/refunds/refundItems", function () {
-    beforeEach(function () {
-      sandbox.stub(Meteor.server.method_handlers, "orders/sendNotification", function (...args) {
+  describe("orders/refunds/refundItems", () => {
+    beforeEach(() => {
+      sandbox.stub(Meteor.server.method_handlers, "orders/sendNotification", (...args) => {
         check(args, [Match.Any]);
       });
     });
 
-    it("should return error if user does not have admin permissions", function () {
+    it("should return error if user does not have admin permissions", () => {
       sandbox.stub(Reaction, "hasPermission", () => false);
       const group = shippingObjectMethod(order);
       spyOnMethod("refunds/refundItems", order.userId);
@@ -512,7 +512,7 @@ describe("orders test", function () {
       expect(refundItems).to.throw(ReactionError, /Access Denied/);
     });
 
-    it("should update the order as partially refunded if not all of items in the order are refunded", function () {
+    it("should update the order as partially refunded if not all of items in the order are refunded", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const group = shippingObjectMethod(order);
       spyOnMethod("refunds/refundItems", order.userId);
@@ -528,7 +528,7 @@ describe("orders test", function () {
       expect(shippingObjectMethod(updateOrder).payment.status).to.equal("partialRefund");
     });
 
-    it("should update the order as refunded if all items in the order are refunded", function () {
+    it("should update the order as refunded if all items in the order are refunded", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const group = shippingObjectMethod(order);
       spyOnMethod("refunds/refundItems", order.userId);
