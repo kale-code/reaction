@@ -75,7 +75,7 @@ Meteor.startup(() => {
       if (_.isFunction(maybeFn)) {
         // A connect error middleware needs exactly 4 arguments because they use fn.length === 4 to
         // decide if something is an error middleware.
-        return function (a, b, c, d) {
+        return (a, b, c, d) => {
           Meteor.bindEnvironment(maybeFn)(a, b, c, d);
         };
       }
@@ -101,7 +101,7 @@ let responseHeaders = {
  * @example Reaction.Endpoints.add("post", "/webhooks/shopify/orders-create", function (req, res){})
  * @return {undefined}
  */
-Endpoints.add = function (method, path, handler) {
+Endpoints.add = (method, path, handler) => {
   // Make sure path starts with a slash
   let slashedPath = path;
   if (path[0] !== "/") {
@@ -137,7 +137,7 @@ Endpoints.add = function (method, path, handler) {
  * @param  {Object} headers HTTP headers
  * @return {undefined}
  */
-Endpoints.setResponseHeaders = function (headers) {
+Endpoints.setResponseHeaders = headers => {
   responseHeaders = headers;
 };
 
@@ -156,7 +156,7 @@ Endpoints.setResponseHeaders = function (headers) {
  *   If `undefined`, there will be no response body.
  * @return {void}
  */
-Endpoints.sendResponse = function (res, options = {}) {
+Endpoints.sendResponse = (res, options = {}) => {
   // We've already set global headers on response, but if they
   // pass in more here, we set those.
   if (options.headers) {
