@@ -10,7 +10,7 @@ Template.twitter.onRendered(function () {
   //
   // return twitter
   //
-  return this.autorun(function () {
+  return this.autorun(() => {
     const template = Template.instance();
     const data = Template.currentData();
     $('meta[property^="twitter:"]').remove();
@@ -61,7 +61,7 @@ Template.twitter.onRendered(function () {
 });
 
 Template.twitter.events({
-  "click a": function (event) {
+  "click a": event => {
     event.preventDefault();
     return window.open(Template.instance().$(".twitter-share").attr("href"), "twitter_window", "width=750, height=650");
   }
