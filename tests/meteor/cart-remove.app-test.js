@@ -13,15 +13,15 @@ import Fixtures from "/imports/plugins/core/core/server/fixtures";
 
 Fixtures();
 
-describe("cart methods", function () {
+describe("cart methods", () => {
   const shop = getShop();
   let sandbox;
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
   });
 
@@ -30,20 +30,20 @@ describe("cart methods", function () {
     Meteor.users.remove({});
   });
 
-  describe("cart/removeFromCart", function () {
+  describe("cart/removeFromCart", () => {
     let account;
     let accountId;
     let user;
     let userId;
 
-    before(function () {
+    before(() => {
       user = Factory.create("user");
       userId = user._id;
       account = Factory.create("account", { userId });
       accountId = account._id;
     });
 
-    beforeEach(function () {
+    beforeEach(() => {
       Collections.Cart.remove({});
     });
 
@@ -64,7 +64,7 @@ describe("cart methods", function () {
       return done();
     });
 
-    it("should decrease the quantity when called with a quantity", function () {
+    it("should decrease the quantity when called with a quantity", () => {
       const cart = Factory.create("cartTwo", { accountId });
       sandbox.stub(Reaction, "getShopId", () => shop._id);
       const cartFromCollection = Collections.Cart.findOne({ _id: cart._id });
@@ -74,7 +74,7 @@ describe("cart methods", function () {
       expect(updatedCart.items[0].quantity).to.equal(1);
     });
 
-    it("should remove cart item when quantity is decreased to zero", function () {
+    it("should remove cart item when quantity is decreased to zero", () => {
       const cart = Factory.create("cartOne", { accountId });
       sandbox.stub(Reaction, "getShopId", () => shop._id);
       const cartFromCollection = Collections.Cart.findOne({ _id: cart._id });
@@ -85,7 +85,7 @@ describe("cart methods", function () {
       expect(updatedCart.items.length).to.equal(0);
     });
 
-    it("should throw an exception when attempting to remove item from cart of another user", function (done) {
+    it("should throw an exception when attempting to remove item from cart of another user", done => {
       Factory.create("cart");
       const cartItemId = "testId123";
 
@@ -96,7 +96,7 @@ describe("cart methods", function () {
       return done();
     });
 
-    it("should throw an exception when attempting to remove non-existing item", function (done) {
+    it("should throw an exception when attempting to remove non-existing item", done => {
       const cartItemId = Random.id();
 
       function removeFromCartFunc() {
