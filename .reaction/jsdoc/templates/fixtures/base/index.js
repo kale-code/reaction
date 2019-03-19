@@ -26,8 +26,7 @@ var Base = dcl( [chains], /** @lends base# */{
 	 * @param {hash} options A hash of options you want to set
 	 * @see {base#addDefaultOptions}
 	 */
-	addOptions        : function ( options ) {
-		options = options || {};
+	addOptions        : function ( options = {} ) {
 		if ( this.options ) {options = sys.extend( {}, sys.result( this, 'options' ), options );}
 		this.options = options;
 	},
@@ -37,8 +36,7 @@ var Base = dcl( [chains], /** @lends base# */{
 	 * @param {hash} options A hash of options you want to set
 	 * @see {base#addOptions}
 	 */
-	addDefaultOptions : function ( options ) {
-		options = options || {};
+	addDefaultOptions : function ( options = {} ) {
 		if ( this.options ) {options = sys.defaults( {}, sys.result( this, 'options' ), options );}
 		this.options = options;
 	},
