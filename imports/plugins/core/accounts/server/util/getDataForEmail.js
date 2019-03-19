@@ -6,9 +6,7 @@ import Reaction from "/imports/plugins/core/core/server/Reaction";
 
 export const ENROLL_URI_BASE = "account/enroll";
 
-MeteorAccounts.urls.enrollAccount = function (token) {
-  return Reaction.absoluteUrl(`${ENROLL_URI_BASE}/${token}`);
-};
+MeteorAccounts.urls.enrollAccount = token => Reaction.absoluteUrl(`${ENROLL_URI_BASE}/${token}`);
 
 /**
  * @name getDataForEmail
