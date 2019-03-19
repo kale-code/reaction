@@ -31,7 +31,7 @@ function getProductFindTerm(searchTerm, searchTags, userId) {
 
 export const getResults = {};
 
-getResults.products = function (searchTerm, facets, maxResults, userId) {
+getResults.products = (searchTerm, facets, maxResults, userId) => {
   const searchTags = facets || [];
   const findTerm = getProductFindTerm(searchTerm, searchTags, userId);
   const productResults = ProductSearch.find(
@@ -55,7 +55,7 @@ getResults.products = function (searchTerm, facets, maxResults, userId) {
   return productResults;
 };
 
-getResults.orders = function (searchTerm, facets, maxResults, userId) {
+getResults.orders = (searchTerm, facets, maxResults, userId) => {
   let orderResults;
   const regexSafeSearchTerm = escapeStringRegex(searchTerm);
   const shopId = Reaction.getShopId();
@@ -140,7 +140,7 @@ getResults.orders = function (searchTerm, facets, maxResults, userId) {
   return orderResults;
 };
 
-getResults.accounts = function (searchTerm, facets, maxResults, userId) {
+getResults.accounts = (searchTerm, facets, maxResults, userId) => {
   let accountResults;
   const shopId = Reaction.getShopId();
   const searchPhone = _.replace(searchTerm, /\D/g, "");
