@@ -18,7 +18,7 @@ const defaultColl = new JobCollection();
 
 const validJobDoc = (d) => Match.test(d, defaultColl.jobDocPattern);
 
-describe("JobCollection default constructor", function () {
+describe("JobCollection default constructor", () => {
   it("should be an instance of JobCollection", function () {
     this.timeout(15000);
     expect(defaultColl, "JobCollection constructor failed").to.be.an.instanceOf(JobCollection);
@@ -37,7 +37,7 @@ describe("JobCollection default constructor", function () {
   });
 });
 
-describe("JobCollection", function () {
+describe("JobCollection", () => {
   let clientTestColl;
   let serverTestColl;
   let testColl;
@@ -82,7 +82,7 @@ describe("JobCollection", function () {
 
   it("should run startJobServer on new job collection", function (done) {
     this.timeout(15000);
-    testColl.startJobServer(function (err, res) {
+    testColl.startJobServer((err, res) => {
       if (err) { done(err); }
       expect(res, "startJobServer failed in callback result").to.equal(true);
       if (Meteor.isServer) {
@@ -102,13 +102,13 @@ describe("JobCollection", function () {
       const res = job.save();
       assert.ok(validId(res), "job.save() failed in sync result");
 
-      const q = testColl.processJobs(jobType, { pollInterval: 250 }, function (jobResult, cb) {
+      const q = testColl.processJobs(jobType, { pollInterval: 250 }, (jobResult, cb) => {
         expect(jobResult._doc._id).to.equal(res);
         jobResult.done();
         return cb();
       });
 
-      testColl.events.once("jobDone", function (msg) {
+      testColl.events.once("jobDone", msg => {
         expect(msg.method).to.equal("jobDone");
         if (msg.params[0] === res) {
           return q.shutdown({ level: "soft", quiet: true }, () => done());
@@ -123,11 +123,11 @@ describe("JobCollection", function () {
     const job = new Job(testColl, jobType, { some: "data" });
     assert.ok(validJobDoc(job.doc));
 
-    job.save(function (err, res) {
+    job.save((err, res) => {
       if (err) { done(err); }
       assert.ok(validId(res), "job.save() failed in callback result");
 
-      const q = testColl.processJobs(jobType, { pollInterval: 250 }, function (jobResult, cb) {
+      const q = testColl.processJobs(jobType, { pollInterval: 250 }, (jobResult, cb) => {
         expect(jobResult._doc._id).to.equal(res);
         jobResult.done();
         cb();
@@ -149,7 +149,7 @@ describe("JobCollection", function () {
       let eventFlag = false;
       let err = null;
 
-      testColl.events.once("jobSave", function (msg) {
+      testColl.events.once("jobSave", msg => {
         eventFlag = true;
         if (!msg.error) {
           done(new Error("Server error event didn't dispatch"));
@@ -166,7 +166,7 @@ describe("JobCollection", function () {
         done();
       }
     } else {
-      return job.save(function (err) {
+      return job.save(err => {
         if (!err) { done(new Error("Error did not propagate to Client")); }
         return done();
       });
@@ -187,12 +187,12 @@ describe("JobCollection", function () {
 
     assert.ok(validJobDoc(job.doc));
 
-    job.save(function (err, res) {
+    job.save((err, res) => {
       if (err) { test.fail(err); }
 
       assert.ok(validId(res), "job.save() failed in callback result");
 
-      const q = testColl.processJobs(jobType, { pollInterval: 250 }, function (jobResult, cb) {
+      const q = testColl.processJobs(jobType, { pollInterval: 250 }, (jobResult, cb) => {
         expect(jobResult._doc._id).to.equal(res);
         jobResult.done();
         cb();
@@ -207,21 +207,21 @@ describe("JobCollection", function () {
     const jobType = `TestJob_${Math.round(Math.random() * 1000000000)}`;
     const job = new Job(testColl, jobType, { some: "data" }).repeat({ repeats: 1, wait: 250 });
 
-    job.save(function (err, res) {
+    job.save((err, res) => {
       if (err) { test.fail(err); }
       assert.ok(validId(res), "job.save() failed in callback result");
 
-      const q = testColl.processJobs(jobType, { pollInterval: 250 }, function (jobResult, cb) {
+      const q = testColl.processJobs(jobType, { pollInterval: 250 }, (jobResult, cb) => {
         counter += 1;
         if (counter === 1) {
           expect(jobResult.doc._id).to.equal(res);
 
-          jobResult.done("Result1", { repeatId: true }, function (err2, res2) {
+          jobResult.done("Result1", { repeatId: true }, (err2, res2) => {
             if (err2) { done(err2); }
             assert.ok(res2);
             expect(res2).to.not.equal(true);
 
-            testColl.getJob(res2, function (err3, j) {
+            testColl.getJob(res2, (err3, j) => {
               if (err3) { done(err3); }
               expect(j._doc._id).to.equal(res2);
               cb();
@@ -229,7 +229,7 @@ describe("JobCollection", function () {
           });
         } else {
           expect(jobResult.doc._id).to.not.equal(res);
-          jobResult.done("Result2", { repeatId: true }, function (err2, res2) {
+          jobResult.done("Result2", { repeatId: true }, (err2, res2) => {
             if (err2) { done(err2); }
             expect(res2).to.equal(true);
             cb();
@@ -246,15 +246,15 @@ describe("JobCollection", function () {
     const job = new Job(testColl, jobType, { order: 1 });
     const job2 = new Job(testColl, jobType, { order: 2 });
     job.delay(1000); // Ensure that job 1 has the opportunity to run first
-    job.save(function (err, res) {
+    job.save((err, res) => {
       if (err) { done(err); }
       assert.ok(validId(res), "job.save() failed in callback result");
       job2.depends([job]);
-      return job2.save(function (err2, res2) {
+      return job2.save((err2, res2) => {
         if (err2) { done(err2); }
         assert.ok(validId(res2), "job.save() failed in callback result");
         let count = 0;
-        const q = testColl.processJobs(jobType, { pollInterval: 250 }, function (jobResult, cb) {
+        const q = testColl.processJobs(jobType, { pollInterval: 250 }, (jobResult, cb) => {
           count += 1;
           expect(count).to.equal(jobResult.data.order);
           jobResult.done();
@@ -281,7 +281,7 @@ describe("JobCollection", function () {
       job3.save();
       job4.save();
       job5.depends([job, job2, job3, job4]);
-      return job5.save(function (err, res) {
+      return job5.save((err, res) => {
         if (err) { done(err); }
         assert.ok(validId(res), "job2.save() failed in callback result");
         // This creates an inconsistent state
@@ -308,16 +308,16 @@ describe("JobCollection", function () {
     const jobType = `TestJob_${Math.round(Math.random() * 1000000000)}`;
     const job = new Job(testColl, jobType, { order: 1 });
     const job2 = new Job(testColl, jobType, { order: 2 });
-    return job.save(function (err, res) {
+    return job.save((err, res) => {
       if (err) { done(err); }
       assert.ok(validId(res), "job.save() failed in callback result");
       job2.depends([job]);
-      const q = testColl.processJobs(jobType, { pollInterval: 250 }, function (j, cb) {
-        j.done(`Job ${j.data.order} Done`, function (err2, res2) {
+      const q = testColl.processJobs(jobType, { pollInterval: 250 }, (j, cb) => {
+        j.done(`Job ${j.data.order} Done`, (err2, res2) => {
           if (err2) { done(err2); }
           assert.ok(res2);
           if (j.data.order === 1) {
-            job2.save(function (err3, res3) {
+            job2.save((err3, res3) => {
               if (err3) { done(err3); }
               assert.ok(validId(res3), "job2.save() failed in callback result");
             });
@@ -335,15 +335,15 @@ describe("JobCollection", function () {
     const jobType = `TestJob_${Math.round(Math.random() * 1000000000)}`;
     const job = new Job(testColl, jobType, { order: 1 });
     const job2 = new Job(testColl, jobType, { order: 2 });
-    return job.save(function (err, res) {
+    return job.save((err, res) => {
       if (err) { done(err); }
       assert.ok(validId(res), "job.save() failed in callback result");
       job2.depends([job]);
-      const q = testColl.processJobs(jobType, { pollInterval: 250 }, function (j, cb) {
-        j.fail(`Job ${j.data.order} Failed`, function (err2, res2) {
+      const q = testColl.processJobs(jobType, { pollInterval: 250 }, (j, cb) => {
+        j.fail(`Job ${j.data.order} Failed`, (err2, res2) => {
           if (err2) { done(err2); }
           assert.ok(res2);
-          return job2.save(function (err3, res3) {
+          return job2.save((err3, res3) => {
             if (err3) { done(err3); }
             assert.isNull(res3, "job2.save() failed in callback result");
             q.shutdown({ level: "soft", quiet: true }, () => done());
@@ -359,14 +359,14 @@ describe("JobCollection", function () {
     const jobType = `TestJob_${Math.round(Math.random() * 1000000000)}`;
     const job = new Job(testColl, jobType, { order: 1 });
     const job2 = new Job(testColl, jobType, { order: 2 });
-    job.save(function (err, res) {
+    job.save((err, res) => {
       if (err) { done(err); }
       assert.ok(validId(res), "job.save() failed in callback result");
       job2.depends([job]);
-      return job.cancel(function (err2, res2) {
+      return job.cancel((err2, res2) => {
         if (err2) { done(err2); }
         assert.ok(res2);
-        return job2.save(function (err3, res3) {
+        return job2.save((err3, res3) => {
           if (err3) { assert.ok(err3); }
           assert.isNull(res3, "job2.save() failed in callback result");
           done();
@@ -380,17 +380,17 @@ describe("JobCollection", function () {
     const jobType = `TestJob_${Math.round(Math.random() * 1000000000)}`;
     const job = new Job(testColl, jobType, { order: 1 });
     const job2 = new Job(testColl, jobType, { order: 2 });
-    job.save(function (err, res) {
+    job.save((err, res) => {
       if (err) { done(err); }
       assert.ok(validId(res), "job.save() failed in callback result");
       job2.depends([job]);
-      return job.cancel(function (err2, res2) {
+      return job.cancel((err2, res2) => {
         if (err2) { done(err2); }
         assert.ok(res2);
-        return job.remove(function (err3, res3) {
+        return job.remove((err3, res3) => {
           if (err3) { done(err3); }
           assert.ok(res3);
-          return job2.save(function (err4, res4) {
+          return job2.save((err4, res4) => {
             if (err4) { done(err); }
             assert.isNull(res4, "job2.save() failed in callback result");
             done();
@@ -404,10 +404,10 @@ describe("JobCollection", function () {
     this.timeout(15000);
     const jobType = `TestJob_${Math.round(Math.random() * 1000000000)}`;
     const job = new Job(testColl, jobType, {});
-    job.save(function (err2, res2) {
+    job.save((err2, res2) => {
       if (err2) { done(err2); }
       assert.ok(validId(res2), "job.save() failed in callback result");
-      job.cancel({ dependents: false }, function (err3, res3) {
+      job.cancel({ dependents: false }, (err3, res3) => {
         if (err3) { done(err3); }
         assert.ok(res3);
         done();
@@ -421,16 +421,16 @@ describe("JobCollection", function () {
     const job = new Job(testColl, jobType, { order: 1 });
     const job2 = new Job(testColl, jobType, { order: 2 });
     job.delay(1000); // Ensure that job2 has the opportunity to run first
-    job.save(function (err, res) {
+    job.save((err, res) => {
       if (err) { done(err); }
       assert.ok(validId(res), "job.save() failed in callback result");
       job2.depends([job]);
-      job2.save(function (err2, res2) {
+      job2.save((err2, res2) => {
         if (err2) { done(err2); }
         assert.ok(validId(res2), "job.save() failed in callback result");
         let count = 0;
         let timer;
-        const q = testColl.processJobs(jobType, { pollInterval: 250 }, function (jobResult, cb) {
+        const q = testColl.processJobs(jobType, { pollInterval: 250 }, (jobResult, cb) => {
           count += 1;
           expect(count).to.equal(jobResult.data.order);
           jobResult.done(null, { delayDeps: 1500 });
@@ -451,16 +451,16 @@ describe("JobCollection", function () {
     const job = new Job(testColl, jobType, { order: 1 });
     const job2 = new Job(testColl, jobType, { order: 2 });
     job.delay(1000); // Ensure that job2 has the opportunity to run first
-    return job.save(function (err, res) {
+    return job.save((err, res) => {
       if (err) { test.fail(err); }
       assert.ok(validId(res), "job.save() failed in callback result");
       job2.depends([job]);
-      job2.save(function (err2, res2) {
+      job2.save((err2, res2) => {
         if (err2) { done(err2); }
         assert.ok(validId(res2), "job.save() failed in callback result");
         let count = 0;
         let timer;
-        const q = testColl.processJobs(jobType, { pollInterval: 250 }, function (jobResult, cb) {
+        const q = testColl.processJobs(jobType, { pollInterval: 250 }, (jobResult, cb) => {
           count += 1;
           expect(count).to.equal(jobResult.data.order);
           jobResult.done(null, { delayDeps: 1500 });
@@ -484,16 +484,16 @@ describe("JobCollection", function () {
     jobs[1] = new Job(testColl, jobType, { count: 1 }).priority("high");
     jobs[2] = new Job(testColl, jobType, { count: 2 });
 
-    jobs[0].save(function (err, res) {
+    jobs[0].save((err, res) => {
       if (err) { done(err); }
       assert.ok(validId(res), "jobs[0].save() failed in callback result");
-      jobs[1].save(function (err2, res2) {
+      jobs[1].save((err2, res2) => {
         if (err2) { done(err2); }
         assert.ok(validId(res2), "jobs[1].save() failed in callback result");
-        jobs[2].save(function (err3, res3) {
+        jobs[2].save((err3, res3) => {
           if (err3) { done(err3); }
           assert.ok(validId(res3), "jobs[2].save() failed in callback result");
-          const q = testColl.processJobs(jobType, { pollInterval: 250 }, function (job, cb) {
+          const q = testColl.processJobs(jobType, { pollInterval: 250 }, (job, cb) => {
             counter += 1;
             expect(job.data.count).to.equal(counter);
             job.done();
@@ -516,16 +516,16 @@ describe("JobCollection", function () {
     jobs[1] = new Job(testColl, jobType, { count: 1 }).priority("high");
     jobs[2] = new Job(testColl, jobType, { count: 2 });
 
-    jobs[0].save(function (err, res) {
+    jobs[0].save((err, res) => {
       if (err) { done(err); }
       assert.ok(validId(res), "jobs[0].save() failed in callback result");
-      jobs[1].save(function (err2, res2) {
+      jobs[1].save((err2, res2) => {
         if (err2) { done(err2); }
         assert.ok(validId(res2), "jobs[1].save() failed in callback result");
-        jobs[2].save(function (err3, res3) {
+        jobs[2].save((err3, res3) => {
           if (err3) { done(err3); }
           assert.ok(validId(res3), "jobs[2].save() failed in callback result");
-          const q = testColl.processJobs(jobType, { pollInterval: 250 }, function (job, cb) {
+          const q = testColl.processJobs(jobType, { pollInterval: 250 }, (job, cb) => {
             counter += 1;
             expect(job.data.count).to.equal(counter);
             job.done();
@@ -544,10 +544,10 @@ describe("JobCollection", function () {
     let counter = 0;
     const jobType = `TestJob_${Math.round(Math.random() * 1000000000)}`;
     const job = new Job(testColl, jobType, { some: "data" }).retry({ retries: testColl.forever, wait: 0 });
-    job.save(function (err, res) {
+    job.save((err, res) => {
       if (err) { done(err); }
       assert.ok(validId(res), "job.save() failed in callback result");
-      const q = testColl.processJobs(jobType, { pollInterval: 250 }, function (jobResult, cb) {
+      const q = testColl.processJobs(jobType, { pollInterval: 250 }, (jobResult, cb) => {
         counter += 1;
         expect(jobResult.doc._id).to.equal(res);
         if (counter < 3) {
@@ -567,10 +567,10 @@ describe("JobCollection", function () {
     let counter = 0;
     const jobType = `TestJob_${Math.round(Math.random() * 1000000000)}`;
     const job = new Job(testColl, jobType, { some: "data" }).retry({ retries: 2, wait: 200, backoff: "exponential" });
-    job.save(function (err, res) {
+    job.save((err, res) => {
       if (err) { done(err); }
       assert.ok(validId(res), "job.save() failed in callback result");
-      const q = testColl.processJobs(jobType, { pollInterval: 250 }, function (jobResult, cb) {
+      const q = testColl.processJobs(jobType, { pollInterval: 250 }, (jobResult, cb) => {
         counter += 1;
         expect(jobResult.doc._id).to.equal(res);
         if (counter < 3) {
@@ -589,17 +589,17 @@ describe("JobCollection", function () {
     this.timeout(15000);
     const jobType = `TestJob_${Math.round(Math.random() * 1000000000)}`;
     const job = new Job(testColl, jobType, { some: "data" }).retry({ until: new Date(new Date().valueOf() + 1500), wait: 500 });
-    job.save(function (err, res) {
+    job.save((err, res) => {
       if (err) { done(err); }
       assert.ok(validId(res), "job.save() failed in callback result");
-      const q = testColl.processJobs(jobType, { pollInterval: 250 }, function (jobResult, cb) {
+      const q = testColl.processJobs(jobType, { pollInterval: 250 }, (jobResult, cb) => {
         expect(jobResult.doc._id).to.equal(res);
         jobResult.fail("Fail test");
         cb();
       });
       Meteor.setTimeout(
         () =>
-          job.refresh(function () {
+          job.refresh(() => {
             expect(job._doc.status, "Until didn't cause job to stop retrying").to.equal("failed");
             q.shutdown({ level: "soft", quiet: true }, () => done());
           }),
@@ -613,10 +613,10 @@ describe("JobCollection", function () {
     let counter = 0;
     const jobType = `TestJob_${Math.round(Math.random() * 1000000000)}`;
     const job = new Job(testColl, jobType, { some: "data" }).retry({ retries: 2, wait: 0 });
-    job.save(function (err, res) {
+    job.save((err, res) => {
       if (err) { done(err); }
       assert.ok(validId(res), "job.save() failed in callback result");
-      const q = testColl.processJobs(jobType, { pollInterval: 250, workTimeout: 500 }, function (jobResult, cb) {
+      const q = testColl.processJobs(jobType, { pollInterval: 250, workTimeout: 500 }, (jobResult, cb) => {
         counter += 1;
         expect(jobResult.doc._id).to.equal(res);
         if (counter === 2) {
@@ -628,7 +628,7 @@ describe("JobCollection", function () {
 
       Meteor.setTimeout(
         () =>
-          job.refresh(function () {
+          job.refresh(() => {
             expect(job._doc.status, "Job didn't successfully autofail and retry").to.equal("completed");
             q.shutdown({ level: "soft", quiet: true }, () => done());
           }),
@@ -660,19 +660,19 @@ describe("JobCollection", function () {
         for (let i = 1, end = count, asc = end >= 1; asc ? i <= end : i >= end; asc ? i += 1 : i -= 1) {
           const j = new Job(testColl, jobType, { idx: i });
           // eslint-disable-next-line no-loop-func
-          result.push(j.save(function (err, res) {
+          result.push(j.save((err, res) => {
             if (err) { done(err); }
             if (!validId(res)) { done("job.save() Invalid _id value returned"); }
             c -= 1;
             if (!c) {
               let ids = testColl.find({ type: jobType, status: "ready" }).map((d) => d._id);
               expect(count).to.equal(ids.length);
-              testColl.cancelJobs(ids, function (err2, res2) {
+              testColl.cancelJobs(ids, (err2, res2) => {
                 if (err2) { done(err2); }
                 if (!res2) { done("cancelJobs Failed"); }
                 ids = testColl.find({ type: jobType, status: "cancelled" }).map((d) => d._id);
                 expect(count).to.equal(ids.length);
-                testColl.removeJobs(ids, function (err3, res3) {
+                testColl.removeJobs(ids, (err3, res3) => {
                   if (err3) { done(err3); }
                   if (!res3) { done("removeJobs Failed"); }
                   ids = testColl.find({ type: jobType });
@@ -697,10 +697,10 @@ describe("JobCollection", function () {
           schedule: testColl.later.parse.text("every 1 second")
         })
         .delay(1000);
-      job.save(function (err, res) {
+      job.save((err, res) => {
         if (err) { test.fail(err); }
         assert.ok(validId(res), "job.save() failed in callback result");
-        const q = testColl.processJobs(jobType, { pollInterval: 250 }, function (jobResult, cb) {
+        const q = testColl.processJobs(jobType, { pollInterval: 250 }, (jobResult, cb) => {
           counter += 1;
           if (counter === 1) {
             expect(jobResult.doc._id).to.equal(res);
@@ -713,9 +713,9 @@ describe("JobCollection", function () {
         let ev; // eslint-disable-line prefer-const
         const listener = () => {
           if (counter === 2) {
-            job.refresh(function () {
+            job.refresh(() => {
               expect(job._doc.status).to.equal("completed");
-              q.shutdown({ level: "soft", quiet: true }, function () {
+              q.shutdown({ level: "soft", quiet: true }, () => {
                 ev.removeListener("jobDone", listener);
                 done();
               });
@@ -730,7 +730,7 @@ describe("JobCollection", function () {
 
   it("should run shutdownJobServer on the job collection", function (done) {
     this.timeout(15000);
-    testColl.shutdownJobServer({ timeout: 1 }, function (err, res) {
+    testColl.shutdownJobServer({ timeout: 1 }, (err, res) => {
       if (err) { done(err); }
       expect(res, true, "shutdownJobServer failed in callback result");
       if (Meteor.isServer) {
@@ -743,7 +743,7 @@ describe("JobCollection", function () {
   if (Meteor.isClient) {
     it("should run startJobServer on remote job collection", function (done) {
       this.timeout(15000);
-      remoteServerTestColl.startJobServer(function (err, res) {
+      remoteServerTestColl.startJobServer((err, res) => {
         if (err) { done(err); }
         expect(res, "startJobServer failed in callback result").to.equal(true);
         done();
@@ -755,10 +755,10 @@ describe("JobCollection", function () {
       const jobType = `TestJob_${Math.round(Math.random() * 1000000000)}`;
       const job = new Job(remoteServerTestColl, jobType, { some: "data" });
       assert.ok(validJobDoc(job.doc));
-      return job.save(function (err, res) {
+      return job.save((err, res) => {
         if (err) { done(err); }
         assert.ok(validId(res), "job.save() failed in callback result");
-        const q = remoteServerTestColl.processJobs(jobType, { pollInterval: 250 }, function (jobResult, cb) {
+        const q = remoteServerTestColl.processJobs(jobType, { pollInterval: 250 }, (jobResult, cb) => {
           expect(jobResult._doc._id).to.equal(res);
           jobResult.done();
           cb();
@@ -769,7 +769,7 @@ describe("JobCollection", function () {
 
     it("should run shutdownJobServer on remote job collection", function (done) {
       this.timeout(15000);
-      remoteServerTestColl.shutdownJobServer({ timeout: 1 }, function (err, res) {
+      remoteServerTestColl.shutdownJobServer({ timeout: 1 }, (err, res) => {
         if (err) { done(err); }
         expect(res, "shutdownJobServer failed in callback result").to.equal(true);
         done();
