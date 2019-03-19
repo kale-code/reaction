@@ -13,17 +13,15 @@ import { Shops } from "/lib/collections";
 
 Fixtures();
 
-describe("Shop Methods", function () {
-  beforeEach(function () {
-    return Shops.remove({});
-  });
+describe("Shop Methods", () => {
+  beforeEach(() => Shops.remove({}));
 
-  after(function () {
+  after(() => {
     spies.restoreAll();
     stubs.restoreAll();
   });
 
-  it("shop factory should create a new shop", function () {
+  it("shop factory should create a new shop", () => {
     stubs.create("hasPermissionStub", Reaction, "hasPermission");
     stubs.hasPermissionStub.returns(true);
     spies.create("shopInsertSpy", Shops, "insert");
@@ -32,22 +30,22 @@ describe("Shop Methods", function () {
   });
 });
 
-describe("core shop methods", function () {
+describe("core shop methods", () => {
   let sandbox;
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
   });
 
-  describe("shop/createShop", function () {
+  describe("shop/createShop", () => {
     let primaryShop;
     let insertShopSpy;
 
-    beforeEach(function () {
+    beforeEach(() => {
       Shops.remove({});
 
       primaryShop = Factory.create("shop");
@@ -56,8 +54,8 @@ describe("core shop methods", function () {
       insertShopSpy = sandbox.spy(Shops, "insert");
     });
 
-    describe("failure conditions", function () {
-      it("throws a 403 error by non admin", function () {
+    describe("failure conditions", () => {
+      it("throws a 403 error by non admin", () => {
         sandbox.stub(Reaction, "hasPermission", () => false);
 
         expect(() => Meteor.call("shop/createShop"))
@@ -66,12 +64,12 @@ describe("core shop methods", function () {
       });
     });
 
-    describe("success conditions", function () {
+    describe("success conditions", () => {
       let userId;
       let shopId;
       let name;
 
-      beforeEach(function () {
+      beforeEach(() => {
         userId = Random.id();
         shopId = Random.id();
         name = Random.id();
@@ -94,7 +92,7 @@ describe("core shop methods", function () {
           .withArgs(sinon.match(/Created shop/), sinon.match.string);
       });
 
-      afterEach(function () {
+      afterEach(() => {
         const newShopCount = Shops.find({ name }).count();
         expect(newShopCount).to.equal(1);
       });
