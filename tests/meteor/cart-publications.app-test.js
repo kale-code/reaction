@@ -11,15 +11,15 @@ import Fixtures from "/imports/plugins/core/core/server/fixtures";
 
 Fixtures();
 
-describe("Cart Publication", function () {
+describe("Cart Publication", () => {
   const shop = getShop();
   let sandbox;
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
   });
 
@@ -43,7 +43,7 @@ describe("Cart Publication", function () {
       Collections.Cart.remove({});
     });
 
-    it("should return a cart cursor", function () {
+    it("should return a cart cursor", () => {
       Collections.Cart.insert({
         accountId: account._id,
         shopId: shop._id
@@ -54,7 +54,7 @@ describe("Cart Publication", function () {
       expect(data.userId).to.equal(userId);
     });
 
-    it("should return only one cart in cursor", function () {
+    it("should return only one cart in cursor", () => {
       const user2 = Factory.create("registeredUser");
       const account2 = Factory.create("account", { userId: user2._id });
 
