@@ -7,7 +7,7 @@ Template.googleplus.onRendered(function () {
   if (this.data.placement === "footer" && (((ref = this.data.apps.googleplus) !== null ? ref.profilePage : void 0) !== null)) {  // eslint-disable-line
     return this.$(".googleplus-share").attr("href", this.data.apps.googleplus.profilePage);
   }
-  return this.autorun(function () {
+  return this.autorun(() => {
     let media;
     let ref1;
     let ref2;
@@ -46,7 +46,7 @@ Template.googleplus.onRendered(function () {
 });
 
 Template.googleplus.events({
-  "click a": function (event) {
+  "click a": event => {
     event.preventDefault();
     return window.open(Template.instance().$(".googleplus-share").attr("href"), "googleplus_window", "width=750, height=650");
   }
