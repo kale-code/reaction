@@ -66,7 +66,7 @@ function processExpressionObject( val, key ) {
 				operation : op,
 				operands  : []
 			};
-			sys.each( val[ op ], function ( entry ) {
+			sys.each( val[ op ], entry => {
 				operator.operands = parseQueryExpression( entry );
 			} );
 		}
@@ -96,14 +96,14 @@ function processPrefixOperator( operation, operand ) {
 	if ( sys.isArray( operand ) ) {
 		//if it is an array we need to loop through the array and parse each operand
 		//if it is an array we need to loop through the array and parse each operand
-		sys.each( operand, function ( obj ) {
-			sys.each( obj, function ( val, key ) {
+		sys.each( operand, obj => {
+			sys.each( obj, ( val, key ) => {
 				component.operands.push( processExpressionObject( val, key ) );
 			} );
 		} );
 	} else {
 		//otherwise it is an object and we can parse it directly
-		sys.each( operand, function ( val, key ) {
+		sys.each( operand, ( val, key ) => {
 			component.operands.push( processExpressionObject( val, key ) );
 		} );
 	}
@@ -120,7 +120,7 @@ function processPrefixOperator( operation, operand ) {
 
 function parseQueryExpression( obj ) {
 	if ( sys.size( obj ) > 1 ) {
-		var arr = sys.map( obj, function ( v, k ) {
+		var arr = sys.map( obj, ( v, k ) => {
 			var entry = {};
 			entry[k] = v;
 			return entry;
@@ -130,7 +130,7 @@ function parseQueryExpression( obj ) {
 		};
 	}
 	var payload = [];
-	sys.each( obj, function ( val, key ) {
+	sys.each( obj, ( val, key ) => {
 
 		var exprObj = processExpressionObject( val, key );
 
@@ -329,9 +329,7 @@ function pushin( path, record, setter, newValue ) {
 
 				if ( sys.isArray( parent[lastPart] ) ) {
 					keys = exports.findKeys( parent[lastPart], newValue );
-					sys.each( keys, function ( val, index ) {
-						return delete parent[lastPart][index];
-					} );
+					sys.each( keys, ( val, index ) => delete parent[lastPart][index] );
 					parent[lastPart] = sys.compact( parent[lastPart] );
 					return parent[lastPart];
 				}
@@ -357,11 +355,9 @@ var operations = {
 	 * probe.find( data, {categories : {$eq: "cat1"}} );
 	 */
 
-	$eq        : function ( qu, value ) {
+	$eq        : ( qu, value ) => {
 		if ( sys.isArray( value ) ) {
-			return sys.find( value, function ( entry ) {
-				return JSON.stringify( qu.operands[0] ) === JSON.stringify( entry );
-			} ) !== void 0;
+			return sys.find( value, entry => JSON.stringify( qu.operands[0] ) === JSON.stringify( entry ) ) !== void 0;
 		} else {
 			return JSON.stringify( qu.operands[0] ) === JSON.stringify( value );
 		}
@@ -377,11 +373,9 @@ var operations = {
 	 * probe.find( data, {"name.first" : {$ne : "Sheryl"}} );
 	 */
 
-	$ne        : function ( qu, value ) {
+	$ne        : ( qu, value ) => {
 		if ( sys.isArray( value ) ) {
-			return sys.find( value, function ( entry ) {
-				return JSON.stringify( qu.operands[0] ) !== JSON.stringify( entry );
-			} ) !== void 0;
+			return sys.find( value, entry => JSON.stringify( qu.operands[0] ) !== JSON.stringify( entry ) ) !== void 0;
 		} else {
 			return JSON.stringify( qu.operands[0] ) !== JSON.stringify( value );
 		}
@@ -396,7 +390,7 @@ var operations = {
 	 * probe.find( data, {"categories" : {$all : ["cat4", "cat2", "cat1"]}} );
 	 */
 
-	$all       : function ( qu, value ) {
+	$all       : ( qu, value ) => {
 		var operands, result;
 
 		result = false;
@@ -416,9 +410,7 @@ var operations = {
 	 * probe.find( data, {"age" : {$gt : 24}} );
 	 */
 
-	$gt        : function ( qu, value ) {
-		return qu.operands[0] < value;
-	},
+	$gt        : ( qu, value ) => qu.operands[0] < value,
 	/**
 	 * `$gte` Sees if a field is greater than or equal to the value
 	 * `{field: {$gte: value}}`
@@ -429,9 +421,7 @@ var operations = {
 	 * probe.find( data, {"age" : {$gte : 50}} );
 	 */
 
-	$gte       : function ( qu, value ) {
-		return qu.operands[0] <= value;
-	},
+	$gte       : ( qu, value ) => qu.operands[0] <= value,
 	/**
 	 * `$lt` Sees if a field is less than the value
 	 * `{field: {$lt: value}}`
@@ -442,9 +432,7 @@ var operations = {
 	 * probe.find( data, {"age" : {$lt : 24}} );
 	 */
 
-	$lt        : function ( qu, value ) {
-		return qu.operands[0] > value;
-	},
+	$lt        : ( qu, value ) => qu.operands[0] > value,
 	/**
 	 * `$lte` Sees if a field is less than or equal to the value
 	 * `{field: {$lte: value}}`
@@ -455,9 +443,7 @@ var operations = {
 	 * probe.find( data, {"age" : {$lte : 50}} );
 	 */
 
-	$lte       : function ( qu, value ) {
-		return qu.operands[0] >= value;
-	},
+	$lte       : ( qu, value ) => qu.operands[0] >= value,
 	/**
 	 * `$in` Sees if a field has one of the values in the query
 	 * `{field: {$in: [test1, test2, test3,...]}}`
@@ -468,7 +454,7 @@ var operations = {
 	 * probe.find( data, {"age" : {$in : [24, 28, 60]}} );
 	 */
 
-	$in        : function ( qu, value ) {
+	$in        : ( qu, value ) => {
 		var operands;
 
 		operands = sys.flatten( qu.operands );
@@ -484,7 +470,7 @@ var operations = {
 	 * probe.find( data, {"age" : {$nin : [24, 28, 60]}} );
 	 */
 
-	$nin       : function ( qu, value ) {
+	$nin       : ( qu, value ) => {
 		var operands;
 
 		operands = sys.flatten( qu.operands );
@@ -500,9 +486,7 @@ var operations = {
 	 * probe.find( data, {"name.middle" : {$exists : true}} );
 	 */
 
-	$exists    : function ( qu, value ) {
-		return (sys.isNull( value ) || sys.isUndefined( value )) !== qu.operands[0];
-	},
+	$exists    : ( qu, value ) => (sys.isNull( value ) || sys.isUndefined( value )) !== qu.operands[0],
 	/**
 	 * Checks equality to a modulus operation on a field
 	 * `{field: {$mod: [divisor, remainder]}}`
@@ -513,7 +497,7 @@ var operations = {
 	 * probe.find( data, {"age" : {$mod : [2, 0]}} );
 	 */
 
-	$mod       : function ( qu, value ) {
+	$mod       : ( qu, value ) => {
 		var operands = sys.flatten( qu.operands );
 		if ( operands.length !== 2 ) {
 			throw new Error( "$mod requires two operands" );
@@ -532,9 +516,7 @@ var operations = {
 	 * probe.find( data, {attr : {$size : 3}} );
 	 */
 
-	$size      : function ( qu, value ) {
-		return sys.size( value ) === qu.operands[0];
-	},
+	$size      : ( qu, value ) => sys.size( value ) === qu.operands[0],
 	/**
 	 * Performs a regular expression test againts the field
 	 * `{field: {$regex: re, $options: reOptions}}`
@@ -545,7 +527,7 @@ var operations = {
 	 * probe.find( data, {"name.first" : {$regex : "m*", $options : "i"}} );
 	 */
 
-	$regex     : function ( qu, value ) {
+	$regex     : ( qu, value ) => {
 		var r = new RegExp( qu.operands[0], qu.options );
 		return r.test( value );
 	},
@@ -561,7 +543,7 @@ var operations = {
      *  {color : "red", "hand" : "left"}
      * ]}} );
 	 */
-	$elemMatch : function ( qu, value ) {
+	$elemMatch : ( qu, value ) => {
 		var expression, test, _i, _len;
 
 		if ( sys.isArray( value ) ) {
@@ -589,10 +571,10 @@ var operations = {
      * ]} );
 	 */
 
-	$and       : function ( qu, value, record ) {
+	$and       : ( qu, value, record ) => {
 		var isAnd = false;
 
-		sys.each( qu.operands, function ( expr ) {
+		sys.each( qu.operands, expr => {
 			if ( expr.path ) {
 				expr.splitPath = expr.splitPath || splitPath( expr.path );
 			}
@@ -617,9 +599,9 @@ var operations = {
 	 *      {categories : "cat1"}
 	 * ]} );
 	 */
-	$or        : function ( qu, value, record ) {
+	$or        : ( qu, value, record ) => {
 		var isOr = false;
-		sys.each( qu.operands, function ( expr ) {
+		sys.each( qu.operands, expr => {
 			if ( expr.path ) {
 				expr.splitPath = expr.splitPath || splitPath( expr.path );
 			}
@@ -644,9 +626,9 @@ var operations = {
      *      {categories : "cat1"}
      * ]} );
 	 */
-	$nor       : function ( qu, value, record ) {
+	$nor       : ( qu, value, record ) => {
 		var isOr = false;
-		sys.each( qu.operands, function ( expr ) {
+		sys.each( qu.operands, expr => {
 			if ( expr.path ) {
 				expr.splitPath = expr.splitPath || splitPath( expr.path );
 			}
@@ -668,10 +650,10 @@ var operations = {
 	 * var probe = require("documents/probe");
 	 * probe.find( data, {$not : {"age" : {$lt : 24}}} );
 	 */
-	$not       : function ( qu, value, record ) {
+	$not       : ( qu, value, record ) => {
 
 		var result = false;
-		sys.each( qu.operands, function ( expr ) {
+		sys.each( qu.operands, expr => {
 			if ( expr.path ) {
 				expr.splitPath = expr.splitPath || splitPath( expr.path );
 			}
@@ -698,7 +680,7 @@ var operations = {
 function execQuery( obj, qu, shortCircuit, stopOnFirst ) {
 	var arrayResults = [];
 	var keyResults = [];
-	sys.each( obj, function ( record, key ) {
+	sys.each( obj, ( record, key ) => {
 		var expr, result, test, _i, _len;
 
 		for ( _i = 0, _len = qu.length; _i < _len; _i++ ) {
@@ -731,15 +713,9 @@ function execQuery( obj, qu, shortCircuit, stopOnFirst ) {
  @param {object} qu The query which will be used to identify the records to updated
  @param {object} setDocument The update operator. See {@link module:documents/probe.updateOperators}
  */
-exports.update = function ( obj, qu, setDocument ) {
+exports.update = ( obj, qu, setDocument ) => {
 	var records = exports.find( obj, qu );
-	return sys.each( records, function ( record ) {
-		return sys.each( setDocument, function ( fields, operator ) {
-			return sys.each( fields, function ( newValue, path ) {
-				return pushin( splitPath( path ), record, operator, newValue );
-			} );
-		} );
-	} );
+	return sys.each( records, record => sys.each( setDocument, ( fields, operator ) => sys.each( fields, ( newValue, path ) => pushin( splitPath( path ), record, operator, newValue ) ) ) );
 };
 /**
  Find all records that match a query
@@ -747,7 +723,7 @@ exports.update = function ( obj, qu, setDocument ) {
  @param {object} qu The query to execute. See {@link module:documents/probe.queryOperators} for the operators you can use.
  @returns {array} The results
  **/
-exports.find = function ( obj, qu ) {
+exports.find = ( obj, qu ) => {
 	var expression, _i, _len;
 
 	var query = parseQueryExpression( qu );
@@ -766,7 +742,7 @@ exports.find = function ( obj, qu ) {
  @param {object} qu The query to execute. See {@link module:documents/probe.queryOperators} for the operators you can use.
  @returns {array}
  */
-exports.findKeys = function ( obj, qu ) {
+exports.findKeys = ( obj, qu ) => {
 	var expression, _i, _len;
 
 	var query = parseQueryExpression( qu );
@@ -785,7 +761,7 @@ exports.findKeys = function ( obj, qu ) {
  @param {object} qu The query to execute. See {@link module:documents/probe.queryOperators} for the operators you can use.
  @returns {object}
  */
-exports.findOne = function ( obj, qu ) {
+exports.findOne = ( obj, qu ) => {
 	var expression, _i, _len;
 
 	var query = parseQueryExpression( qu );
@@ -810,7 +786,7 @@ exports.seek = exports.findOne;
  @param {object} qu The query to execute. See {@link module:documents/probe.queryOperators} for the operators you can use.
  @returns {object}
  */
-exports.findOneKey = function ( obj, qu ) {
+exports.findOneKey = ( obj, qu ) => {
 	var expression, _i, _len;
 
 	var query = parseQueryExpression( qu );
@@ -835,7 +811,7 @@ exports.seekKey = exports.findOneKey;
  @param {object} qu The query to execute. See {@link module:documents/probe.queryOperators} for the operators you can use.
  @return {object|array} The array or object as appropriate without the records.
  **/
-exports.remove = function ( obj, qu ) {
+exports.remove = ( obj, qu ) => {
 	var expression, _i, _len;
 
 	var query = parseQueryExpression( qu );
@@ -848,16 +824,14 @@ exports.remove = function ( obj, qu ) {
 	var results = execQuery( obj, query, false, false ).keyResults;
 	if ( sys.isArray( obj ) ) {
 		var newArr = [];
-		sys.each( obj, function ( item, index ) {
+		sys.each( obj, ( item, index ) => {
 			if ( !sys.includes( results, index ) ) {
 				return newArr.push( item );
 			}
 		} );
 		return newArr;
 	} else {
-		sys.each( results, function ( key ) {
-			return delete obj[key];
-		} );
+		sys.each( results, key => delete obj[key] );
 		return obj;
 	}
 };
@@ -868,9 +842,7 @@ exports.remove = function ( obj, qu ) {
  @param {object} qu The query to execute. See {@link module:documents/probe.queryOperators} for the operators you can use.
  @returns {boolean}
  **/
-exports.all = function ( obj, qu ) {
-	return exports.find( obj, qu ).length === sys.size( obj );
-};
+exports.all = ( obj, qu ) => exports.find( obj, qu ).length === sys.size( obj );
 
 /**
  Returns true if any of the items match the query
@@ -879,7 +851,7 @@ exports.all = function ( obj, qu ) {
  @param {object} qu The query to execute. See {@link module:documents/probe.queryOperators} for the operators you can use.
  @returns {boolean}
  **/
-exports.any = function ( obj, qu ) {
+exports.any = ( obj, qu ) => {
 	var expression, _i, _len;
 
 	var query = parseQueryExpression( qu );
@@ -899,11 +871,9 @@ exports.any = function ( obj, qu ) {
  @param {object} qu The query to execute. See {@link module:documents/probe.queryOperators} for the operators you can use.
  @return {array}
  **/
-exports.unique = function ( obj, qu ) {
+exports.unique = ( obj, qu ) => {
 	var test = exports.find( obj, qu );
-	return sys.unique( test, function ( item ) {
-		return JSON.stringify( item );
-	} );
+	return sys.unique( test, item => JSON.stringify( item ) );
 };
 
 /**
@@ -915,9 +885,7 @@ exports.unique = function ( obj, qu ) {
  @param {string} setter The set operation.  See {@link module:documents/probe.updateOperators} for the operators you can use.
  @param {object} newValue The value to write to the, or if the operator is $pull, the query of items to look for
  */
-exports.set = function ( record, path, setter, newValue ) {
-	return pushin( splitPath( path ), record, setter, newValue );
-};
+exports.set = ( record, path, setter, newValue ) => pushin( splitPath( path ), record, setter, newValue );
 
 /**
  Reaches into an object and allows you to get at a value deeply nested in an object. This is not a query, but a
@@ -927,9 +895,7 @@ exports.set = function ( record, path, setter, newValue ) {
  @param {object} record The record to reach into
  @return {*} Whatever was found in the record
  **/
-exports.get = function ( record, path ) {
-	return reachin( splitPath( path ), record );
-};
+exports.get = ( record, path ) => reachin( splitPath( path ), record );
 
 /**
  Returns true if any of the items match the query. Aliases as `any`
@@ -972,11 +938,11 @@ var bindables = {
  @param {object|array} obj The object or array to bind to
  @return {object} An object with method bindings in place
  **/
-exports.proxy = function ( obj ) {
+exports.proxy = obj => {
 	var retVal;
 
 	retVal = {};
-	sys.each( bindables, function ( val, key ) {
+	sys.each( bindables, ( val, key ) => {
 		retVal[key] = sys.bind( val, obj, obj );
 	} );
 	return retVal;
@@ -989,9 +955,9 @@ exports.proxy = function ( obj ) {
  @param {object|array=} collection If the collection is not the same as <code>this</code> but is a property, or even
  a whole other object, you specify that here. Otherwise the <code>obj</code> is assumed to be the same as the collecion
  **/
-exports.mixin = function ( obj, collection ) {
+exports.mixin = ( obj, collection ) => {
 	collection = collection || obj;
-	return sys.each( bindables, function ( val, key ) {
+	return sys.each( bindables, ( val, key ) => {
 		obj[key] = sys.bind( val, obj, collection );
 	} );
 };
