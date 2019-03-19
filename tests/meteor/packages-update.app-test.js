@@ -8,19 +8,19 @@ import { Packages } from "/lib/collections";
 import Reaction from "/imports/plugins/core/core/server/Reaction";
 import ReactionError from "@reactioncommerce/reaction-error";
 
-describe("Update Package", function () {
+describe("Update Package", () => {
   let sandbox;
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
   });
 
-  describe("package/update", function () {
-    it("should throw an 'Access Denied' error for non-admins", function (done) {
+  describe("package/update", () => {
+    it("should throw an 'Access Denied' error for non-admins", done => {
       const pkgUpdateSpy = sandbox.spy(Packages, "update");
       const examplePackage = Factory.create("examplePackage");
 
@@ -33,7 +33,7 @@ describe("Update Package", function () {
       return done();
     });
 
-    it("should throw an error when supplied with an argument of the wrong type", function (done) {
+    it("should throw an error when supplied with an argument of the wrong type", done => {
       const pkgUpdateSpy = sandbox.spy(Packages, "update");
       sandbox.stub(Reaction, "getShopId", () => "randomId");
       sandbox.stub(Reaction, "hasPermission", () => true);
@@ -49,7 +49,7 @@ describe("Update Package", function () {
       return done();
     });
 
-    it("should be able to update any Package", function (done) {
+    it("should be able to update any Package", done => {
       const packageUpdateSpy = sandbox.spy(Packages, "update");
       const oldPackage = Factory.create("examplePackage");
 
