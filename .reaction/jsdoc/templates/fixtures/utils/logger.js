@@ -25,14 +25,14 @@ var Logger = dcl( null, /** @lends  utils/logger.Logger# */{
 	 * and the cycles are minimal.
 	 *
 	 */
-	silent : function () {
+	silent : () => {
 		log.disableAll();
 	},
 	/**
 	 * Turns on all logging levels
 	 *
 	 */
-	all    : function () {
+	all    : () => {
 		log.enableAll();
 	},
 	/**
@@ -40,7 +40,7 @@ var Logger = dcl( null, /** @lends  utils/logger.Logger# */{
 	 * @param {string} lvl The level to set it to. Can be  one of `trace`, `debug`, `info`, `warn`, `error`.
 	 *
 	 */
-	level  : function ( lvl ) {
+	level  : lvl => {
 		if ( lvl.toLowerCase() === "none" ) {
 			log.disableAll();
 		} else {
