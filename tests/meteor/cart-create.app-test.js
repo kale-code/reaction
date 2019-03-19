@@ -15,7 +15,7 @@ import Fixtures from "/imports/plugins/core/core/server/fixtures";
 
 Fixtures();
 
-describe("Add/Create cart methods", function () {
+describe("Add/Create cart methods", () => {
   const user = Factory.create("user");
   const account = Factory.create("account", { userId: user._id });
   const shop = getShop();
@@ -24,7 +24,7 @@ describe("Add/Create cart methods", function () {
   let sandbox;
   let originals;
 
-  before(function () {
+  before(() => {
     originals = {
       mergeCart: Meteor.server.method_handlers["cart/mergeCart"],
       createCart: Meteor.server.method_handlers["cart/createCart"],
@@ -32,11 +32,11 @@ describe("Add/Create cart methods", function () {
     };
   });
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
   });
 
@@ -44,7 +44,7 @@ describe("Add/Create cart methods", function () {
     Meteor.users.remove({});
   });
 
-  afterEach(function () {
+  afterEach(() => {
     Meteor.users.remove({});
   });
 
@@ -57,8 +57,8 @@ describe("Add/Create cart methods", function () {
     });
   }
 
-  describe("cart/createCart", function () {
-    it("should create a test cart", function () {
+  describe("cart/createCart", () => {
+    it("should create a test cart", () => {
       sandbox.stub(Reaction, "getPrimaryShopId", () => shop._id);
       const cartInsertSpy = sandbox.spy(Cart, "insert");
       const cartId = Meteor.call("cart/createCart");
@@ -68,17 +68,15 @@ describe("Add/Create cart methods", function () {
     });
   });
 
-  describe("cart/addToCart", function () {
+  describe("cart/addToCart", () => {
     const quantity = 1;
     let product;
     let productId;
     let variantId;
     let permissionStub;
 
-    before(function () {
-      permissionStub = sinon.stub(Reaction, "hasPermission", function () {
-        return true;
-      });
+    before(() => {
+      permissionStub = sinon.stub(Reaction, "hasPermission", () => true);
 
       product = addProduct();
       productId = product._id;
@@ -87,15 +85,15 @@ describe("Add/Create cart methods", function () {
       })._id;
     });
 
-    after(function () {
+    after(() => {
       permissionStub.restore();
     });
 
-    beforeEach(function () {
+    beforeEach(() => {
       Cart.remove({});
     });
 
-    it("should add item to cart", function (done) {
+    it("should add item to cart", done => {
       let cart = Factory.create("cart", { accountId });
       const items = cart.items.length;
       spyOnMethod("addToCart", userId);
@@ -106,7 +104,7 @@ describe("Add/Create cart methods", function () {
       done();
     });
 
-    it("should merge all items of same variant in cart", function () {
+    it("should merge all items of same variant in cart", () => {
       sandbox.stub(Reaction, "getShopId", () => shop._id);
       spyOnMethod("addToCart", userId);
       const cartId = Meteor.call("cart/createCart");
@@ -119,7 +117,7 @@ describe("Add/Create cart methods", function () {
       expect(cart.items[0].quantity).to.equal(2);
     });
 
-    it("should throw error an exception if user doesn't have a cart", function (done) {
+    it("should throw error an exception if user doesn't have a cart", done => {
       const userWithoutCart = Factory.create("user");
       spyOnMethod("addToCart", userWithoutCart._id);
       function addToCartFunc() {
@@ -129,7 +127,7 @@ describe("Add/Create cart methods", function () {
       return done();
     });
 
-    it("should throw error an exception if product doesn't exists", function (done) {
+    it("should throw error an exception if product doesn't exists", done => {
       spyOnMethod("addToCart", userId);
       function addToCartFunc() {
         return Meteor.call("cart/addToCart", "fakeProductId", variantId, quantity);
@@ -139,8 +137,8 @@ describe("Add/Create cart methods", function () {
     });
   });
 
-  describe("cart/unsetAddresses", function () {
-    it("should correctly remove addresses from cart", function (done) {
+  describe("cart/unsetAddresses", () => {
+    it("should correctly remove addresses from cart", done => {
       let cart = Factory.create("cart", { accountId });
       spyOnMethod("setShipmentAddress", userId);
       spyOnMethod("setPaymentAddress", userId);
@@ -169,42 +167,30 @@ describe("Add/Create cart methods", function () {
       return done();
     });
 
-    it("should throw error if wrong arguments were passed", function (done) {
+    it("should throw error if wrong arguments were passed", done => {
       const accountUpdateStub = sandbox.stub(Accounts, "update");
 
-      expect(function () {
-        return Meteor.call("cart/unsetAddresses", 123456);
-      }).to.throw();
+      expect(() => Meteor.call("cart/unsetAddresses", 123456)).to.throw();
 
-      expect(function () {
-        return Meteor.call("cart/unsetAddresses", {});
-      }).to.throw();
+      expect(() => Meteor.call("cart/unsetAddresses", {})).to.throw();
 
-      expect(function () {
-        return Meteor.call("cart/unsetAddresses", null);
-      }).to.throw();
+      expect(() => Meteor.call("cart/unsetAddresses", null)).to.throw();
 
-      expect(function () {
-        return Meteor.call("cart/unsetAddresses");
-      }).to.throw();
+      expect(() => Meteor.call("cart/unsetAddresses")).to.throw();
 
-      expect(function () {
-        return Meteor.call("cart/unsetAddresses", "asdad", 123);
-      }).to.throw();
+      expect(() => Meteor.call("cart/unsetAddresses", "asdad", 123)).to.throw();
 
       // https://github.com/aldeed/meteor-simple-schema/issues/522
-      expect(function () {
-        return Meteor.call("accounts/addressBookRemove", () => {
+      expect(() => Meteor.call("accounts/addressBookRemove", () => {
           expect(true).to.be.true;
-        });
-      }).to.not.throw();
+        })).to.not.throw();
 
       expect(accountUpdateStub).to.not.have.been.called;
       accountUpdateStub.restore();
       return done();
     });
 
-    it("should update cart via `type` argument", function (done) {
+    it("should update cart via `type` argument", done => {
       let cart = Factory.create("cart", { accountId });
       spyOnMethod("setShipmentAddress", userId);
       spyOnMethod("setPaymentAddress", userId);
