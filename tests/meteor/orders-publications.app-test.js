@@ -14,22 +14,22 @@ import Fixtures from "/imports/plugins/core/core/server/fixtures";
 
 Fixtures();
 
-describe("Order Publication", function () {
+describe("Order Publication", () => {
   const shop = getShop();
   let sandbox;
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
     Collections.Orders.remove();
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
     Collections.Orders.remove();
   });
 
   describe("Orders", () => {
-    it("should return shop orders for an admin", function (done) {
+    it("should return shop orders for an admin", done => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       sandbox.stub(Reaction, "getShopId", () => shop._id);
       sandbox.stub(Roles, "userIsInRole", () => true);
@@ -42,7 +42,7 @@ describe("Order Publication", function () {
       }).then(() => done(/* empty */)).catch(done);
     });
 
-    it("should not return shop orders for a non-admin", function (done) {
+    it("should not return shop orders for a non-admin", done => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       sandbox.stub(Reaction, "getShopId", () => shop._id);
       sandbox.stub(Roles, "userIsInRole", () => false);
