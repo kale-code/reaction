@@ -20,20 +20,14 @@ Importer._count = {};
 Importer._indications = {};
 Importer._limit = 1000;
 
-Importer._name = function (collection) {
-  return collection._name;
-};
+Importer._name = collection => collection._name;
 
-Importer._upsert = function () {
-  return true;
-};
+Importer._upsert = () => true;
 
 //
 // TODO Verify if Importer.startup is deprecated
 //
-Importer.startup = function () {
-  return true;
-};
+Importer.startup = () => true;
 
 Importer.load = function (key, object) {
   check(object, Object);
