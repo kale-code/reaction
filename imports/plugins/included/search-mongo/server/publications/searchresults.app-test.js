@@ -63,49 +63,49 @@ function createAccount() {
 }
 
 
-describe("Search results", function () {
+describe("Search results", () => {
   let product;
 
-  before(function () {
+  before(() => {
     buildProductSearch();
   });
 
-  beforeEach(function () {
+  beforeEach(() => {
     const productId = createProduct(true, "Product Search Test");
     buildProductSearchRecord(productId);
     product = Products.findOne(productId);
   });
 
-  describe("product search", function () {
-    it("should produce at least one result for title match", function () {
+  describe("product search", () => {
+    it("should produce at least one result for title match", () => {
       const searchTerm = "Product Search Test";
       const results = getResults.products(searchTerm);
       const numResults = results.count();
       expect(numResults).to.be.above(0);
     });
 
-    it("should produce results which are case insensitive", function () {
+    it("should produce results which are case insensitive", () => {
       const searchTerm = "pRoDuCt SeArCh tEsT";
       const results = getResults.products(searchTerm);
       const numResults = results.count();
       expect(numResults).to.be.above(0);
     });
 
-    it("should produce results on partial matches", function () {
+    it("should produce results on partial matches", () => {
       const searchTerm = "Product";
       const results = getResults.products(searchTerm);
       const numResults = results.count();
       expect(numResults).to.be.above(0);
     });
 
-    it("should produce no results for phony title match", function () {
+    it("should produce no results for phony title match", () => {
       const searchTerm = "xxxxx";
       const results = getResults.products(searchTerm);
       const numResults = results.count();
       expect(numResults).to.equal(0);
     });
 
-    it("should not show hidden product when you are not an admin", function () {
+    it("should not show hidden product when you are not an admin", () => {
       const productId = createProduct(false, "isINVisible");
       buildProductSearchRecord(productId);
       product = Products.findOne(productId);
@@ -117,15 +117,15 @@ describe("Search results", function () {
   });
 });
 
-describe("Account Search results", function () {
+describe("Account Search results", () => {
   let account;
   let sandbox;
 
-  before(function () {
+  before(() => {
     buildAccountSearch();
   });
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
     account = createAccount();
     Accounts.update({ _id: account._id }, {
@@ -138,19 +138,19 @@ describe("Account Search results", function () {
     buildAccountSearchRecord(account._id, ["forceIndex"]);
   });
 
-  afterEach(function () {
+  afterEach(() => {
     Accounts.remove({});
     sandbox.restore();
   });
 
-  describe("account search", function () {
-    it("should match accounts when searching by email", function () {
+  describe("account search", () => {
+    it("should match accounts when searching by email", () => {
       sandbox.stub(Reaction, "hasPermission", () => true);
       const results = getResults.accounts("matchemail@searchtest.com");
       expect(results.count()).to.equal(1);
     });
 
-    it("should not return results if not an admin", function () {
+    it("should not return results if not an admin", () => {
       sandbox.stub(Reaction, "hasPermission", () => false);
       const email = account.emails[0].address;
       const results = getResults.accounts(email);
@@ -159,8 +159,8 @@ describe("Account Search results", function () {
   });
 });
 
-describe("Order Search results", function () {
-  before(function () {
+describe("Order Search results", () => {
+  before(() => {
     OrderSearch.insert({
       shopId: Reaction.getShopId(),
       shippingName: "Ship Name",
@@ -169,40 +169,40 @@ describe("Order Search results", function () {
     });
   });
 
-  after(function () {
+  after(() => {
     OrderSearch.remove({});
   });
 
-  describe("order search", function () {
-    it("should match orders when searching by email", function () {
+  describe("order search", () => {
+    it("should match orders when searching by email", () => {
       const roleStub = sinon.stub(Reaction, "hasPermission", () => true);
       const results = getResults.orders("test@example.com");
       expect(results.count()).to.equal(1);
       roleStub.restore();
     });
 
-    it("should not return results if not an admin", function () {
+    it("should not return results if not an admin", () => {
       const roleStub = sinon.stub(Reaction, "hasPermission", () => false);
       const results = getResults.orders("test@example.com");
       expect(results).to.be.undefined;
       roleStub.restore();
     });
 
-    it("should return results when searching by shipping name", function () {
+    it("should return results when searching by shipping name", () => {
       const roleStub = sinon.stub(Reaction, "hasPermission", () => true);
       const results = getResults.orders("Ship Name");
       expect(results.count()).to.equal(1);
       roleStub.restore();
     });
 
-    it("should return results when searching by billing name", function () {
+    it("should return results when searching by billing name", () => {
       const roleStub = sinon.stub(Reaction, "hasPermission", () => true);
       const results = getResults.orders("Bill Name");
       expect(results.count()).to.equal(1);
       roleStub.restore();
     });
 
-    it("should return results when searching by billing name and be case insensitive", function () {
+    it("should return results when searching by billing name and be case insensitive", () => {
       const roleStub = sinon.stub(Reaction, "hasPermission", () => true);
       const results = getResults.orders("biLl nAme");
       expect(results.count()).to.equal(1);
