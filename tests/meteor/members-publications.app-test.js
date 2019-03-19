@@ -16,20 +16,20 @@ Fixtures();
 
 const shopId = getShop()._id;
 
-describe("Account Publications", function () {
+describe("Account Publications", () => {
   let sandbox;
-  beforeEach(function () {
+  beforeEach(() => {
     // reset
     Meteor.users.remove({});
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
   });
 
-  describe("ShopMembers", function () {
-    it("should let an admin fetch userIds", function () {
+  describe("ShopMembers", () => {
+    it("should let an admin fetch userIds", () => {
       sandbox.stub(Reaction, "getShopId", () => shopId);
       sandbox.stub(Roles, "userIsInRole", () => true);
       const publication = Meteor.server.publish_handlers["ShopMembers"];
@@ -43,7 +43,7 @@ describe("Account Publications", function () {
       expect(data._id).to.equal(user._id);
     });
 
-    it("should not let a regular user fetch userIds", function () {
+    it("should not let a regular user fetch userIds", () => {
       sandbox.stub(Reaction, "getShopId", () => shopId);
       sandbox.stub(Roles, "userIsInRole", () => false);
       const thisContext = {
@@ -55,7 +55,7 @@ describe("Account Publications", function () {
       expect(cursor).to.equal("ready");
     });
 
-    it("should not overpublish user data to admins", function () {
+    it("should not overpublish user data to admins", () => {
       sandbox.stub(Reaction, "getShopId", () => shopId);
       sandbox.stub(Roles, "userIsInRole", () => true);
       const user = Factory.create("user");
