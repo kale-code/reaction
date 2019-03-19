@@ -5,7 +5,7 @@ transformations.products = {};
 transformations.accounts = {};
 transformations.orders = {};
 
-transformations.products.metafields = function (fieldData) {
+transformations.products.metafields = fieldData => {
   const values = [];
   if (fieldData) {
     for (const field of fieldData) {
@@ -15,7 +15,7 @@ transformations.products.metafields = function (fieldData) {
   return values;
 };
 
-transformations.accounts.emails = function (fieldData) {
+transformations.accounts.emails = fieldData => {
   const values = [];
   if (fieldData) {
     for (const email of fieldData) {
@@ -25,7 +25,7 @@ transformations.accounts.emails = function (fieldData) {
   return values;
 };
 
-transformations.accounts.profile = function (fieldData) {
+transformations.accounts.profile = fieldData => {
   let profileObject;
   if (fieldData && fieldData.addressBook && fieldData.addressBook[0] && fieldData.addressBook[0].fullName) {
     profileObject = {
