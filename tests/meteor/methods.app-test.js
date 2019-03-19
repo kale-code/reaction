@@ -8,14 +8,14 @@ import { sinon } from "meteor/practicalmeteor:sinon";
 import Reaction from "/imports/plugins/core/core/server/Reaction";
 import ReactionError from "@reactioncommerce/reaction-error";
 
-describe("Server/Core", function () {
+describe("Server/Core", () => {
   let sandbox;
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
   });
 
@@ -27,9 +27,7 @@ describe("Server/Core", function () {
     it("should throw 403 error by non admin", () => {
       sandbox.stub(Roles, "userIsInRole", () => false);
       sandbox.spy(Tags, "insert");
-      expect(function () {
-        return Meteor.call("shop/createTag", "testTag", true);
-      }).to.throw(ReactionError, /Access Denied/);
+      expect(() => Meteor.call("shop/createTag", "testTag", true)).to.throw(ReactionError, /Access Denied/);
       expect(Tags.insert).not.to.have.been.called;
     });
 
@@ -42,13 +40,13 @@ describe("Server/Core", function () {
     });
   });
 
-  describe("shop/updateHeaderTags", function () {
-    beforeEach(function () {
+  describe("shop/updateHeaderTags", () => {
+    beforeEach(() => {
       Shops.remove({});
       return Tags.remove({});
     });
 
-    it("should throw 403 error by non admin", function (done) {
+    it("should throw 403 error by non admin", done => {
       sandbox.spy(Tags, "update");
       const tag = Factory.create("tag");
       function updateTagFunc() {
@@ -59,10 +57,8 @@ describe("Server/Core", function () {
       return done();
     });
 
-    it("should insert new header tag with 1 argument by admin", function (done) {
-      sandbox.stub(Reaction, "hasPermission", function () {
-        return true;
-      });
+    it("should insert new header tag with 1 argument by admin", done => {
+      sandbox.stub(Reaction, "hasPermission", () => true);
       const tagCount = Tags.find().count();
       Factory.create("shop"); // Create shop so that ReactionCore.getShopId() doesn't fail
       Meteor.call("shop/updateHeaderTags", "new tag");
@@ -73,11 +69,9 @@ describe("Server/Core", function () {
       return done();
     });
 
-    it("should update existing header tag with 2 arguments by admin", function (done) {
+    it("should update existing header tag with 2 arguments by admin", done => {
       let tag;
-      sandbox.stub(Reaction, "hasPermission", function () {
-        return true;
-      });
+      sandbox.stub(Reaction, "hasPermission", () => true);
       tag = Factory.create("tag");
       Meteor.call("shop/updateHeaderTags", "updated tag", tag._id);
       expect(Tags.find().count()).to.equal(1);
