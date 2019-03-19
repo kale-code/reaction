@@ -35,7 +35,7 @@ function processNestedOperator( path, operand ) {
 	return {
 		operation : opKeys[ 0 ],
 		operands  : [operand[ opKeys[ 0 ] ]],
-		path      : path
+		path
 	};
 }
 
@@ -88,7 +88,7 @@ function processExpressionObject( val, key ) {
  **/
 function processPrefixOperator( operation, operand ) {
 	var component = {
-		operation : operation,
+		operation,
 		path      : null,
 		operands  : []
 	};
@@ -720,8 +720,8 @@ function execQuery( obj, qu, shortCircuit, stopOnFirst ) {
 		}
 	} );
 	return {
-		arrayResults : arrayResults,
-		keyResults   : keyResults
+		arrayResults,
+		keyResults
 	};
 }
 
