@@ -17,7 +17,7 @@ import collections from "/imports/collections/rawCollections";
 
 Fixtures();
 
-describe("Publication", function () {
+describe("Publication", () => {
   let shopId;
   let merchantShopId;
   let primaryShopId;
@@ -32,7 +32,7 @@ describe("Publication", function () {
 
   const productScrollLimit = 24;
 
-  beforeEach(function () {
+  beforeEach(() => {
     shopId = Random.id();
     merchantShopId = Random.id();
     primaryShopId = Random.id();
@@ -53,11 +53,11 @@ describe("Publication", function () {
     Factory.create("shop", { _id: inactiveMerchantShopId, shopType: "merchant" });
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
   });
 
-  describe("with products", function () {
+  describe("with products", () => {
     let collector;
 
     const priceRangeA = {
@@ -166,8 +166,8 @@ describe("Publication", function () {
       collector = new PublicationCollector({ userId: Random.id() });
     });
 
-    describe("Products", function () {
-      it("should return all products from active shops to admins in the Primary Shop", function (done) {
+    describe("Products", () => {
+      it("should return all products from active shops to admins in the Primary Shop", done => {
         // setup
         sandbox.stub(Reaction, "getShopId", () => primaryShopId);
         sandbox.stub(Roles, "userIsInRole", () => true);
@@ -181,7 +181,7 @@ describe("Publication", function () {
         }).then(() => done(/* empty */)).catch(done);
       });
 
-      it("should return all products from the current shop to admins in a Merchant Shop", function (done) {
+      it("should return all products from the current shop to admins in a Merchant Shop", done => {
         // setup
         sandbox.stub(Reaction, "getShopId", () => shopId);
         sandbox.stub(Roles, "userIsInRole", () => true);
@@ -195,7 +195,7 @@ describe("Publication", function () {
         }).then(() => done(/* empty */)).catch(done);
       });
 
-      it("returns products from only the shops for which an admin has createProduct Role", function (done) {
+      it("returns products from only the shops for which an admin has createProduct Role", done => {
         // setup
         sandbox.stub(Reaction, "getShopId", () => primaryShopId);
         sandbox.stub(Roles, "userIsInRole", () => true);
@@ -209,7 +209,7 @@ describe("Publication", function () {
         }).then(() => done(/* empty */)).catch(done);
       });
 
-      it("should return only visible products to visitors", function (done) {
+      it("should return only visible products to visitors", done => {
         sandbox.stub(Reaction, "getShopId", () => shopId);
         sandbox.stub(Roles, "userIsInRole", () => false);
 
@@ -222,7 +222,7 @@ describe("Publication", function () {
         }).then(() => done(/* empty */)).catch(done);
       });
 
-      it("should return only products matching query", function (done) {
+      it("should return only products matching query", done => {
         const filters = { query: "Shopkins" };
 
         sandbox.stub(Reaction, "getShopId", () => shopId);
@@ -235,7 +235,7 @@ describe("Publication", function () {
         }).then(() => done(/* empty */)).catch(done);
       });
 
-      it("should not return products not matching query", function (done) {
+      it("should not return products not matching query", done => {
         const filters = { query: "random search" };
 
         sandbox.stub(Reaction, "getShopId", () => shopId);
@@ -246,7 +246,7 @@ describe("Publication", function () {
         }).then(() => done(/* empty */)).catch(done);
       });
 
-      it("should return products in price.min query", function (done) {
+      it("should return products in price.min query", done => {
         const filters = { "price.min": "2.00" };
 
         sandbox.stub(Reaction, "getShopId", () => shopId);
@@ -257,7 +257,7 @@ describe("Publication", function () {
         }).then(() => done(/* empty */)).catch(done);
       });
 
-      it("should return products in price.max query", function (done) {
+      it("should return products in price.max query", done => {
         const filters = { "price.max": "24.00" };
 
         sandbox.stub(Reaction, "getShopId", () => shopId);
@@ -268,7 +268,7 @@ describe("Publication", function () {
         }).then(() => done(/* empty */)).catch(done);
       });
 
-      it("should return products in price.min - price.max range query", function (done) {
+      it("should return products in price.min - price.max range query", done => {
         const filters = { "price.min": "12.00", "price.max": "19.98" };
 
         sandbox.stub(Reaction, "getShopId", () => shopId);
@@ -279,7 +279,7 @@ describe("Publication", function () {
         }).then(() => done(/* empty */)).catch(done);
       });
 
-      it("should return products where value is in price set query", function (done) {
+      it("should return products where value is in price set query", done => {
         const filters = { "price.min": "13.00", "price.max": "24.00" };
 
         sandbox.stub(Reaction, "getShopId", () => shopId);
@@ -290,7 +290,7 @@ describe("Publication", function () {
         }).then(() => done(/* empty */)).catch(done);
       });
 
-      it("should return products from all shops when multiple shops are provided", function (done) {
+      it("should return products from all shops when multiple shops are provided", done => {
         const filters = { shops: [shopId, merchantShopId] };
 
         sandbox.stub(Reaction, "getShopId", () => primaryShopId);
@@ -304,13 +304,13 @@ describe("Publication", function () {
       });
     });
 
-    describe("Products/grid", function () {
-      beforeEach(function () {
+    describe("Products/grid", () => {
+      beforeEach(() => {
         Collections.Catalog.remove({});
       });
 
-      describe("Catalog conditions", function () {
-        it("returns nothing when the Catalog is empty", function (done) {
+      describe("Catalog conditions", () => {
+        it("returns nothing when the Catalog is empty", done => {
           sandbox.stub(Reaction, "getShopId", () => shopId);
 
           collector.collect("Products/grid", ({ Catalog }) => {
@@ -320,7 +320,7 @@ describe("Publication", function () {
           }).then(() => done(/* empty */)).catch(done);
         });
 
-        it("returns products from the Catalog", function (done) {
+        it("returns products from the Catalog", done => {
           sandbox.stub(Reaction, "getShopId", () => shopId);
 
           publishProducts();
@@ -333,12 +333,10 @@ describe("Publication", function () {
         });
       });
 
-      describe("Shop conditions", function () {
-        beforeEach(function () {
-          return publishProducts();
-        });
+      describe("Shop conditions", () => {
+        beforeEach(() => publishProducts());
 
-        it("returns products from the active shop", function (done) {
+        it("returns products from the active shop", done => {
           sandbox.stub(Reaction, "getShopId", () => shopId);
 
           collector.collect("Products/grid", ({ Catalog }) => {
@@ -348,7 +346,7 @@ describe("Publication", function () {
           }).then(() => done(/* empty */)).catch(done);
         });
 
-        it("returns all visible products from all active shops when the Primary Shop is active", function (done) {
+        it("returns all visible products from all active shops when the Primary Shop is active", done => {
           sandbox.stub(Reaction, "getShopId", () => primaryShopId);
 
           collector.collect("Products/grid", ({ Catalog }) => {
@@ -358,7 +356,7 @@ describe("Publication", function () {
           }).then(() => done(/* empty */)).catch(done);
         });
 
-        it("returns products from all shops when the Primary Shop is active, filtered by shop id", function (done) {
+        it("returns products from all shops when the Primary Shop is active, filtered by shop id", done => {
           const filters = { shopIdsOrSlugs: [shopId, merchantShopId] };
 
           sandbox.stub(Reaction, "getShopId", () => primaryShopId);
@@ -382,12 +380,12 @@ describe("Publication", function () {
       }
     });
 
-    describe("Product", function () {
-      beforeEach(function () {
+    describe("Product", () => {
+      beforeEach(() => {
         Collections.Catalog.remove({});
       });
 
-      it("should return a product based on an id", function (done) {
+      it("should return a product based on an id", done => {
         const product = Collections.Products.findOne({
           isVisible: true
         });
@@ -402,7 +400,7 @@ describe("Publication", function () {
         }).then(() => done(/* empty */)).catch(done);
       });
 
-      it("should not return a product if handle does not match exactly", function (done) {
+      it("should not return a product if handle does not match exactly", done => {
         sandbox.stub(Reaction, "getShopId", () => shopId);
 
         collector.collect("Product", "shopkins", ({ Products }) => {
@@ -414,7 +412,7 @@ describe("Publication", function () {
         }).then(() => done(/* empty */)).catch(done);
       });
 
-      it("should not return a product based on exact handle match if it isn't visible", function (done) {
+      it("should not return a product based on exact handle match if it isn't visible", done => {
         sandbox.stub(Reaction, "getShopId", () => shopId);
         sandbox.stub(Roles, "userIsInRole", () => false);
 
@@ -427,7 +425,7 @@ describe("Publication", function () {
         }).then(() => done(/* empty */)).catch(done);
       });
 
-      it("should return a product to admin based on a exact handle match even if it isn't visible", function (done) {
+      it("should return a product to admin based on a exact handle match even if it isn't visible", done => {
         sandbox.stub(Reaction, "getShopId", () => shopId);
         sandbox.stub(Roles, "userIsInRole", () => true);
         sandbox.stub(Reaction, "hasPermission", () => true);
