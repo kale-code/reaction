@@ -33,9 +33,7 @@ var CollectorBase = dcl( Destroyable, {
 		 * @memberOf module:documents/collector~CollectorBase#
 		 */
 		Object.defineProperty( this, "length", {
-				get : function () {
-					return sys.size( that.heap );
-				}
+				get : () => sys.size( that.heap )
 			}
 		);
 		/**
@@ -173,13 +171,9 @@ var CollectorBase = dcl( Destroyable, {
 	 */
 	pluck         : function ( query, property ) {
 		if ( arguments.length === 2 ) {
-			return sys.map( this.find( query ), function ( record ) {
-				return probe.get( record, property );
-			} );
+			return sys.map( this.find( query ), record => probe.get( record, property ) );
 		} else {
-			return sys.map( this.heap, function ( record ) {
-				return probe.get( record, query );
-			} );
+			return sys.map( this.heap, record => probe.get( record, query ) );
 		}
 	},
 	/**
@@ -360,7 +354,7 @@ var ACollector = dcl( CollectorBase, {
  @param {array|object} obj What to collect
  @return {ACollector|OCollector}
  */
-exports.collect = function ( obj ) {
+exports.collect = obj => {
 	if ( sys.isArray( obj ) ) {
 		return new ACollector( obj );
 	} else {
@@ -368,13 +362,9 @@ exports.collect = function ( obj ) {
 	}
 };
 
-exports.array = function ( obj ) {
-	return new ACollector( obj );
-};
+exports.array = obj => new ACollector( obj );
 
-exports.object = function ( obj ) {
-	return new OCollector( obj );
-};
+exports.object = obj => new OCollector( obj );
 
 /**
  Returns true if all items match the query. Aliases as `all`
