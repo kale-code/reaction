@@ -39,7 +39,7 @@ var Bussable = Base.compose( [Base], /** @lends mixins/bussable# */{
 	 */
 	subscribe : function ( channel, topic, callback ) {
 		this.log.trace( "Bussable subscribe" );
-		var sub = bus.subscribe( {channel : channel, topic : topic, callback : callback} );
+		var sub = bus.subscribe( {channel, topic, callback} );
 		this.subscriptions[channel + "." + topic] = sub;
 		return sub;
 	},
@@ -67,7 +67,7 @@ var Bussable = Base.compose( [Base], /** @lends mixins/bussable# */{
 	 */
 	publish : function ( channel, topic, options ) {
 		this.log.trace( "Bussable publish" );
-		bus.publish( {channel : channel, topic : topic, data : options} );
+		bus.publish( {channel, topic, data : options} );
 	},
 
 	/**
