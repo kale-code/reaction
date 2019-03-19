@@ -10,7 +10,7 @@ Template.facebook.onRendered(function () {
   //
   // autorun and insert fb
   //
-  this.autorun(function () {
+  this.autorun(() => {
     let media;
     let ref1;
     const template = Template.instance();
@@ -55,13 +55,13 @@ Template.facebook.onRendered(function () {
     // lint error should be ignored
     //
     if (data.apps.facebook.appId !== null) {
-      return template.$(".facebook-share").click(function (e) {
+      return template.$(".facebook-share").click(e => {
         e.preventDefault();
         return FB.ui({
           method: "share",
           display: "popup",
           href: url
-        }, function () {});
+        }, () => {});
       });
     }
     // else return
@@ -77,19 +77,17 @@ Template.facebook.onRendered(function () {
   });
 });
 
-Template.facebook.onCreated(function () {
+Template.facebook.onCreated(() => {
   const apps = Template.currentData().apps;
   const isEnabled = "facebook" in apps && apps.facebook.enabled;
   if (isEnabled) {
     $('<div id="fb-root"></div>').appendTo("body");
-    window.fbAsyncInit = function () {
-      return FB.init({
+    window.fbAsyncInit = () => FB.init({
         appId: apps.facebook.appId,
         xfbml: true,
         version: "v2.1"
       });
-    };
-    (function (d, s, id) {
+    ((d, s, id) => {
       let js = void 0;
       const fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) {
