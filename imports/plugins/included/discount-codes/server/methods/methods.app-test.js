@@ -22,36 +22,36 @@ before(function () {
   this.timeout(15000);
 });
 
-describe("discount code methods", function () {
+describe("discount code methods", () => {
   const shop = getShop();
   let sandbox;
   let user;
   let account;
   let accountId;
 
-  before(function () {
+  before(() => {
     user = Factory.create("user");
     account = Factory.create("account", { userId: user._id });
     accountId = account._id;
   });
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
   });
 
-  describe("discounts/addCode", function () {
-    it("should throw 403 error with discounts permission", function () {
+  describe("discounts/addCode", () => {
+    it("should throw 403 error with discounts permission", () => {
       sandbox.stub(Roles, "userIsInRole", () => false);
       // this should actually trigger a whole lot of things
       expect(() => Meteor.call("discounts/addCode", code)).to.throw(ReactionError, /Access Denied/);
     });
 
     // admin user
-    it("should add code when user has role", function () {
+    it("should add code when user has role", () => {
       sandbox.stub(Roles, "userIsInRole", () => true);
       const discountInsertSpy = sandbox.spy(Discounts, "insert");
       const discountId = Meteor.call("discounts/addCode", code);
@@ -62,7 +62,7 @@ describe("discount code methods", function () {
     });
   });
 
-  describe("discounts/deleteCode", function () {
+  describe("discounts/deleteCode", () => {
     it("should delete rate with discounts permission", function () {
       this.timeout(15000);
       sandbox.stub(Roles, "userIsInRole", () => true);
@@ -76,7 +76,7 @@ describe("discount code methods", function () {
     });
   });
 
-  describe("discounts/codes/apply", function () {
+  describe("discounts/codes/apply", () => {
     it("should apply code when called for a cart with multiple items from same shop", function () {
       this.timeout(5000);
       sandbox.stub(Reaction, "getCartShopId", () => shop._id);
